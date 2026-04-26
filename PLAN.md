@@ -2,46 +2,59 @@
 
 ## Current Codebase Status
 
-After Phase 0 implementation:
+After Phase 1 implementation:
 
-**Verified present & working:**
-- ✅ Next.js 16 (App Router) + TypeScript scaffolded (`package.json`, `tsconfig.json`, `next.config.ts`)
-- ✅ Tailwind CSS v4 wired (`@import "tailwindcss"` in `src/app/globals.css`, `postcss.config.mjs`)
-- ✅ ESLint configured (`eslint.config.mjs`) — `npm run lint` passes clean
-- ✅ TypeScript strict typecheck passes (`npx tsc --noEmit`)
-- ✅ Production build passes (`npm run build` → static `/` route generated)
-- ✅ Dependencies installed: `firebase`, `react-hook-form`, `zod`, `@hookform/resolvers`, `react-hot-toast`, `lucide-react`, `clsx`
-- ✅ Folder structure: `src/app/`, `src/components/`, `src/context/`, `src/lib/`, `src/data/`, `src/types/`
-- ✅ Firebase init module: [src/lib/firebase.ts](jikmunn-odyssey-task-one/src/lib/firebase.ts) (exports `firebaseApp`, `auth`, `googleProvider`)
-- ✅ Item type: [src/types/item.ts](jikmunn-odyssey-task-one/src/types/item.ts)
-- ✅ Static seed data (6 items, 6 categories): [src/data/items.ts](jikmunn-odyssey-task-one/src/data/items.ts)
-- ✅ Design tokens (brand palette, surfaces, radius, shadows, focus-visible ring) in [src/app/globals.css](jikmunn-odyssey-task-one/src/app/globals.css)
-- ✅ Root metadata branded ("Odyssey — Curated Marketplace") in [src/app/layout.tsx](jikmunn-odyssey-task-one/src/app/layout.tsx)
-- ✅ `next.config.ts` allows `images.unsplash.com` remote images
-- ✅ `.env.example` and `.env.local` (empty placeholders) present; `.env*` ignored by git
+**Phase 0 verified (still passing):**
+- ✅ Next.js 16 (App Router) + TypeScript scaffolded
+- ✅ Tailwind CSS v4 + design tokens (brand palette, surfaces, radius, shadows, focus-visible ring) in [src/app/globals.css](jikmunn-odyssey-task-one/src/app/globals.css)
+- ✅ Folder structure: `src/app/`, `src/components/`, `src/components/ui/`, `src/components/layout/`, `src/context/`, `src/lib/`, `src/data/`, `src/types/`
+- ✅ Static seed data, `Item` type, Firebase wiring, `.env.example`/`.env.local`
+
+**Phase 1 verified present & working:**
+- ✅ Reusable UI primitives in [src/components/ui/](jikmunn-odyssey-task-one/src/components/ui):
+  - [Button.tsx](jikmunn-odyssey-task-one/src/components/ui/Button.tsx) — 5 variants (primary/secondary/ghost/danger/outline), 3 sizes, loading state, leftIcon/rightIcon, fullWidth, forwardRef
+  - [Input.tsx](jikmunn-odyssey-task-one/src/components/ui/Input.tsx) — label, hint, error, leftIcon, rightAddon, a11y `aria-invalid`/`aria-describedby`
+  - [Card.tsx](jikmunn-odyssey-task-one/src/components/ui/Card.tsx) — `Card`, `CardBody`, `CardHeader`, `CardFooter` with hover-elevation
+  - [Badge.tsx](jikmunn-odyssey-task-one/src/components/ui/Badge.tsx) — 5 tones (neutral/brand/success/warning/danger)
+  - [Container.tsx](jikmunn-odyssey-task-one/src/components/ui/Container.tsx) — max-w-7xl responsive container
+  - [Section.tsx](jikmunn-odyssey-task-one/src/components/ui/Section.tsx) — eyebrow/title/description, 3 background tones, optional `bleed`
+  - [Spinner.tsx](jikmunn-odyssey-task-one/src/components/ui/Spinner.tsx) — 3 sizes, accessible `role="status"`
+  - [index.ts](jikmunn-odyssey-task-one/src/components/ui/index.ts) — barrel export
+- ✅ Layout components in [src/components/layout/](jikmunn-odyssey-task-one/src/components/layout):
+  - [Navbar.tsx](jikmunn-odyssey-task-one/src/components/layout/Navbar.tsx) — sticky, backdrop-blur, logo, **4 routes** (Home, Shop, About, Contact), active-link styling, login/register buttons (logged-out), full user dropdown with Add Product / Manage Products / Logout (logged-in), mobile hamburger sheet, click-outside dismiss, route-change auto-close
+  - [Footer.tsx](jikmunn-odyssey-task-one/src/components/layout/Footer.tsx) — 4-column responsive grid, brand block, Explore/Account link columns, social icons (inline GitHub/Twitter/Instagram SVGs), © year, build credit
+  - [nav-links.ts](jikmunn-odyssey-task-one/src/components/layout/nav-links.ts) — shared nav config
+- ✅ [AuthContext](jikmunn-odyssey-task-one/src/context/AuthContext.tsx) — full implementation: `user`, `loading`, `firebaseEnabled`, `login`, `register`, `loginWithGoogle`, `logout`; uses `onAuthStateChanged` and gracefully no-ops when Firebase env keys are missing (build-safe)
+- ✅ [Providers.tsx](jikmunn-odyssey-task-one/src/components/Providers.tsx) — wraps `AuthProvider` + `react-hot-toast` `<Toaster />` with themed styling
+- ✅ [Firebase lazy init](jikmunn-odyssey-task-one/src/lib/firebase.ts) refactored to `getFirebaseApp()` / `getFirebaseAuth()` singletons + `firebaseEnabled` flag — no longer crashes prerender when env is empty
+- ✅ [layout.tsx](jikmunn-odyssey-task-one/src/app/layout.tsx) — wraps `<Providers>` → `<Navbar />` → `<main>{children}</main>` → `<Footer />` so every page (including 404) inherits the shell
+- ✅ [page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — Phase-1 placeholder hero using `Section` + `Button` to demonstrate the design system end-to-end
+- ✅ `npm run lint` — clean (0 errors, 0 warnings)
+- ✅ `npx tsc --noEmit` — clean
+- ✅ `npm run build` — production build passes; `/` and `/_not-found` prerender successfully
 
 **Not yet implemented (deferred to later phases):**
-- ⬜ UI primitives (Button/Input/Card/etc.), Navbar, Footer — Phase 1
-- ⬜ All public pages beyond the default `/` placeholder — Phase 2
-- ⬜ AuthContext, login/register pages — Phase 3
-- ⬜ Protected routes (`/items/add`, `/items/manage`) — Phase 4
+- ⬜ Full landing page (Hero, Features, Items preview, Testimonials, CTA banner) — Phase 2
+- ⬜ `/items`, `/items/[id]`, `/about`, `/contact` page bodies — Phase 2
+- ⬜ `/login`, `/register` page UIs (AuthContext is ready) — Phase 3
+- ⬜ Protected routes (`/items/add`, `/items/manage`) + ProtectedRoute guard + itemsStore — Phase 4
 - ⬜ Polish pass — Phase 5
 - ⬜ README rewrite + Vercel deploy — Phase 6
 
 **Phase progress:**
 - ✅ Phase 0 — Decide & Setup — **100% COMPLETE**
-- ⬜ Phase 1 — Design System & Layout Shell — 0%
+- ✅ Phase 1 — Design System & Layout Shell — **100% COMPLETE**
 - ⬜ Phase 2 — Public Pages — 0%
-- ⬜ Phase 3 — Firebase Authentication — 0%
+- ⬜ Phase 3 — Firebase Authentication (login/register UI) — 0% (context already built ahead)
 - ⬜ Phase 4 — Protected Routes — 0%
 - ⬜ Phase 5 — UI Polish & Responsiveness — 0%
 - ⬜ Phase 6 — Quality, Deploy, Submit — 0%
 
-**Remaining phases: 6** (Phases 1 → 6).
+**Remaining phases: 5** (Phases 2 → 6).
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 
-**Note:** `.env.local` is created with empty Firebase keys — they must be filled before Phase 3 auth flows will work, but the app builds and runs without them.
+**Note:** `.env.local` still has empty Firebase keys — the app builds and runs without them; auth flows will surface a friendly error until keys are filled in Phase 3.
 
 ---
 

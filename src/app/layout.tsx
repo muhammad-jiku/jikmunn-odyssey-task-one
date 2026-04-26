@@ -1,3 +1,6 @@
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Providers } from "@/components/Providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -13,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Odyssey — Curated Marketplace",
+  title: "Jikmunn — Curated Marketplace",
   description:
-    "Odyssey is a modern marketplace for thoughtfully designed products across electronics, fashion, home, books, sports, and beauty.",
+    "Jikmunn is a modern marketplace for thoughtfully designed products across electronics, fashion, home, books, sports, and beauty.",
 };
 
 export default function RootLayout({
@@ -28,7 +31,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
+      </body>
     </html>
   );
 }

@@ -12,9 +12,25 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const firebaseApp: FirebaseApp = getApps().length
-  ? getApp()
-  : initializeApp(firebaseConfig);
+export const firebaseEnabled = Boolean(firebaseConfig.apiKey);
 
-export const auth: Auth = getAuth(firebaseApp);
+let _app: FirebaseApp | null = null;
+let _auth: Auth | null = null;
+
+export function getFirebaseApp(): FirebaseApp | null {
+  if (!firebaseEnabled) return null;
+  if (!_app) {
+    _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  }
+  return _app;
+}
+
+export function getFirebaseAuth(): Auth | null {
+  const app = getFirebaseApp();
+  if (!app) return null;
+  if (!_auth) _auth = getAuth(app);
+  return _auth;
+}
+
 export const googleProvider = new GoogleAuthProvider();
+
