@@ -2,7 +2,7 @@
 
 ## Current Codebase Status
 
-After Phase 1 implementation:
+After Phase 2 implementation:
 
 **Phase 0 verified (still passing):**
 - ✅ Next.js 16 (App Router) + TypeScript scaffolded
@@ -28,14 +28,25 @@ After Phase 1 implementation:
 - ✅ [Providers.tsx](jikmunn-odyssey-task-one/src/components/Providers.tsx) — wraps `AuthProvider` + `react-hot-toast` `<Toaster />` with themed styling
 - ✅ [Firebase lazy init](jikmunn-odyssey-task-one/src/lib/firebase.ts) refactored to `getFirebaseApp()` / `getFirebaseAuth()` singletons + `firebaseEnabled` flag — no longer crashes prerender when env is empty
 - ✅ [layout.tsx](jikmunn-odyssey-task-one/src/app/layout.tsx) — wraps `<Providers>` → `<Navbar />` → `<main>{children}</main>` → `<Footer />` so every page (including 404) inherits the shell
-- ✅ [page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — Phase-1 placeholder hero using `Section` + `Button` to demonstrate the design system end-to-end
 - ✅ `npm run lint` — clean (0 errors, 0 warnings)
 - ✅ `npx tsc --noEmit` — clean
 - ✅ `npm run build` — production build passes; `/` and `/_not-found` prerender successfully
 
+**Phase 2 verified present & working:**
+- ✅ Items helpers in [src/lib/items-utils.ts](jikmunn-odyssey-task-one/src/lib/items-utils.ts) — `CATEGORY_LABELS`, `ALL_CATEGORIES`, `formatPrice` (Intl USD), `formatDate` (Intl en-US short)
+- ✅ [ItemCard.tsx](jikmunn-odyssey-task-one/src/components/items/ItemCard.tsx) — article card with `next/image` (4:3 aspect, inline SVG placeholder fallback), category Badge, amber rating star, line-clamped description, formatted price, hover-lift + image-zoom, `View Details` button → `/items/${id}`
+- ✅ [ItemsBrowser.tsx](jikmunn-odyssey-task-one/src/components/items/ItemsBrowser.tsx) — client component with **search by name/desc**, **category filter** (All + 6 categories), **max-price range slider**, sort (featured / price asc/desc / top-rated), active-filter chips, result count, `Clear` button, empty state with `Reset filters` CTA, responsive grid (1 → 2 → 3 → 4 cols)
+- ✅ [src/app/page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — Full **landing page** (7 sections incl. layout): Navbar (layout) + Hero (gradient eyebrow, headline, dual CTAs, image with floating rating card, stats row) + Features (4-card grid) + Featured Items preview (4 ItemCards, "View all" link) + Testimonials (3 quote cards) + CTA banner (brand-gradient, dual buttons) + Footer (layout)
+- ✅ [src/app/items/page.tsx](jikmunn-odyssey-task-one/src/app/items/page.tsx) — `/items` server page with metadata + header + `<ItemsBrowser items={staticItems} />`
+- ✅ [src/app/items/\[id\]/page.tsx](jikmunn-odyssey-task-one/src/app/items/[id]/page.tsx) — `/items/[id]` dynamic route with `generateStaticParams` + `generateMetadata`, async `params`, `notFound()` on miss, 2-col layout (image / info), category Badge + rating + price + full description + 3-stat info grid (category/rating/added-date), Add-to-cart + Continue-shopping buttons, Back link, **Related products** section (same category, up to 4)
+- ✅ [src/app/about/page.tsx](jikmunn-odyssey-task-one/src/app/about/page.tsx) — About page: hero (story + image + dual CTA) + 4-card values section + create-account CTA card
+- ✅ [src/app/contact/page.tsx](jikmunn-odyssey-task-one/src/app/contact/page.tsx) — Contact page: centered hero + 4 contact channels (email/phone/chat/visit) + FAQ list
+- ✅ All 6 static items prerender as SSG: `/items/static-1` … `/items/static-6`
+- ✅ `npm run lint` — clean (0 errors, 0 warnings)
+- ✅ `npx tsc --noEmit` — clean
+- ✅ `npm run build` — production build passes; 13 static routes prerendered (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/_not-found`)
+
 **Not yet implemented (deferred to later phases):**
-- ⬜ Full landing page (Hero, Features, Items preview, Testimonials, CTA banner) — Phase 2
-- ⬜ `/items`, `/items/[id]`, `/about`, `/contact` page bodies — Phase 2
 - ⬜ `/login`, `/register` page UIs (AuthContext is ready) — Phase 3
 - ⬜ Protected routes (`/items/add`, `/items/manage`) + ProtectedRoute guard + itemsStore — Phase 4
 - ⬜ Polish pass — Phase 5
@@ -44,13 +55,13 @@ After Phase 1 implementation:
 **Phase progress:**
 - ✅ Phase 0 — Decide & Setup — **100% COMPLETE**
 - ✅ Phase 1 — Design System & Layout Shell — **100% COMPLETE**
-- ⬜ Phase 2 — Public Pages — 0%
+- ✅ Phase 2 — Public Pages — **100% COMPLETE**
 - ⬜ Phase 3 — Firebase Authentication (login/register UI) — 0% (context already built ahead)
 - ⬜ Phase 4 — Protected Routes — 0%
 - ⬜ Phase 5 — UI Polish & Responsiveness — 0%
 - ⬜ Phase 6 — Quality, Deploy, Submit — 0%
 
-**Remaining phases: 5** (Phases 2 → 6).
+**Remaining phases: 4** (Phases 3 → 6).
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 
