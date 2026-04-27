@@ -252,8 +252,8 @@ export default function Home() {
                 <Button
                   fullWidth
                   size="lg"
-                  className="bg-white text-brand-700 hover:bg-white/90"
-                >
+                  className="!bg-white !text-brand-700 hover:!bg-white/90"
+>
                   Create account
                 </Button>
               </Link>
@@ -262,7 +262,7 @@ export default function Home() {
                   fullWidth
                   size="lg"
                   variant="outline"
-                  className="border-white/40 text-white hover:bg-white/10"
+                  className="!border-white/40 !text-white hover:!bg-white/10"
                 >
                   Continue browsing
                 </Button>

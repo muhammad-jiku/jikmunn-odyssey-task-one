@@ -1,9 +1,9 @@
 import type { Item } from "@/types/item";
 
-// Image URLs use picsum.photos with deterministic seeds so they never 404
-// and stay stable across builds. The hostname is allow-listed in
-// `next.config.ts` and treated as optimizable by `shouldUnoptimizeImage`.
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/800/600`;
+// Each image is a hand-picked Unsplash photo ID that depicts the product.
+// `images.unsplash.com` is allow-listed in `next.config.ts`.
+const u = (photoId: string) =>
+  `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=800&q=80`;
 
 export const staticItems: Item[] = [
   // ---------------- Electronics ----------------
@@ -16,7 +16,7 @@ export const staticItems: Item[] = [
     price: 199,
     category: "electronics",
     rating: 4.7,
-    imageUrl: img("aurora-headphones"),
+    imageUrl: u("1505740420928-5e560c06d30e"),
     createdAt: "2026-01-10T10:00:00.000Z",
   },
   {
@@ -28,32 +28,8 @@ export const staticItems: Item[] = [
     price: 249,
     category: "electronics",
     rating: 4.6,
-    imageUrl: img("pulse-watch"),
+    imageUrl: u("1523275335684-37898b6baf30"),
     createdAt: "2026-01-15T10:00:00.000Z",
-  },
-  {
-    id: "static-8",
-    title: "Lumen 4K Action Camera",
-    shortDescription: "Pocketable 4K60 with built-in stabilization.",
-    fullDescription:
-      "Capture cinematic adventures with HyperSteady stabilization, 10 m waterproofing, and dual-screen framing for vlogs.",
-    price: 329,
-    category: "electronics",
-    rating: 4.5,
-    imageUrl: img("lumen-cam"),
-    createdAt: "2026-01-22T10:00:00.000Z",
-  },
-  {
-    id: "static-9",
-    title: "Nimbus Mechanical Keyboard",
-    shortDescription: "75% wireless board with hot-swap switches.",
-    fullDescription:
-      "Aluminum chassis, gasket-mounted PCB, and triple-mode connectivity (USB-C, BT 5.3, 2.4 GHz). Sounds great out of the box.",
-    price: 169,
-    category: "electronics",
-    rating: 4.8,
-    imageUrl: img("nimbus-keyboard"),
-    createdAt: "2026-01-28T10:00:00.000Z",
   },
 
   // ---------------- Fashion ----------------
@@ -66,20 +42,8 @@ export const staticItems: Item[] = [
     price: 79,
     category: "fashion",
     rating: 4.4,
-    imageUrl: img("linen-shirt"),
+    imageUrl: u("1564859228273-274232fdb516"),
     createdAt: "2026-02-04T10:00:00.000Z",
-  },
-  {
-    id: "static-10",
-    title: "Heritage Wool Overcoat",
-    shortDescription: "Tailored mid-length coat in slate herringbone.",
-    fullDescription:
-      "Made from a premium Italian wool blend with a satin lining and horn buttons. A timeless layer for transitional weather.",
-    price: 389,
-    category: "fashion",
-    rating: 4.6,
-    imageUrl: img("wool-overcoat"),
-    createdAt: "2026-02-09T10:00:00.000Z",
   },
   {
     id: "static-11",
@@ -90,20 +54,8 @@ export const staticItems: Item[] = [
     price: 149,
     category: "fashion",
     rating: 4.5,
-    imageUrl: img("selvedge-jeans"),
+    imageUrl: u("1542272604-787c3835535d"),
     createdAt: "2026-02-15T10:00:00.000Z",
-  },
-  {
-    id: "static-12",
-    title: "Stone Canvas Tote",
-    shortDescription: "Heavyweight 18 oz canvas with leather handles.",
-    fullDescription:
-      'An everyday carry that wears in beautifully. Roomy enough for a 14" laptop, a paperback, and a thermos.',
-    price: 89,
-    category: "fashion",
-    rating: 4.3,
-    imageUrl: img("canvas-tote"),
-    createdAt: "2026-02-19T10:00:00.000Z",
   },
 
   // ---------------- Home ----------------
@@ -116,7 +68,7 @@ export const staticItems: Item[] = [
     price: 129,
     category: "home",
     rating: 4.6,
-    imageUrl: img("oak-lamp"),
+    imageUrl: u("1513506003901-1e6a229e2d15"),
     createdAt: "2026-02-20T10:00:00.000Z",
   },
   {
@@ -128,32 +80,8 @@ export const staticItems: Item[] = [
     price: 119,
     category: "home",
     rating: 4.7,
-    imageUrl: img("pourover-set"),
+    imageUrl: u("1495474472287-4d71bcdd2085"),
     createdAt: "2026-02-24T10:00:00.000Z",
-  },
-  {
-    id: "static-14",
-    title: "Linen Throw Blanket",
-    shortDescription: "Stonewashed linen-cotton throw in sand.",
-    fullDescription:
-      "Generously sized at 130 × 180 cm with hand-knotted fringe. Naturally cooling in summer, layers warmly in winter.",
-    price: 99,
-    category: "home",
-    rating: 4.4,
-    imageUrl: img("linen-throw"),
-    createdAt: "2026-02-27T10:00:00.000Z",
-  },
-  {
-    id: "static-15",
-    title: "Walnut Wall Shelf",
-    shortDescription: "Floating shelf with concealed bracket.",
-    fullDescription:
-      "FSC-certified American walnut, hand-finished with a hardwax oil. Holds up to 18 kg with the included steel mount.",
-    price: 89,
-    category: "home",
-    rating: 4.5,
-    imageUrl: img("walnut-shelf"),
-    createdAt: "2026-03-01T10:00:00.000Z",
   },
 
   // ---------------- Books ----------------
@@ -166,44 +94,8 @@ export const staticItems: Item[] = [
     price: 39,
     category: "books",
     rating: 4.8,
-    imageUrl: img("atlas-book"),
+    imageUrl: u("1512820790803-83ca734da794"),
     createdAt: "2026-03-01T10:00:00.000Z",
-  },
-  {
-    id: "static-16",
-    title: "Quiet Engineering",
-    shortDescription: "Essays on craft, focus, and small teams.",
-    fullDescription:
-      "Twenty-two essays on shipping software with intention. Cloth-bound with a sewn-in ribbon and a deckled fore-edge.",
-    price: 29,
-    category: "books",
-    rating: 4.6,
-    imageUrl: img("quiet-engineering"),
-    createdAt: "2026-03-04T10:00:00.000Z",
-  },
-  {
-    id: "static-17",
-    title: "Field Notes: Pacific Trails",
-    shortDescription: "Photo essay across 12 coastal hikes.",
-    fullDescription:
-      "Large-format hardcover printed on matte FSC paper, with hand-drawn route maps and tide-tested gear lists.",
-    price: 49,
-    category: "books",
-    rating: 4.5,
-    imageUrl: img("field-notes"),
-    createdAt: "2026-03-07T10:00:00.000Z",
-  },
-  {
-    id: "static-18",
-    title: "Slow Cooking, Fast Lives",
-    shortDescription: "80 weeknight recipes built around one pot.",
-    fullDescription:
-      "From dal to ragù, every recipe fits one pan and one hour. Includes a pull-out pantry chart and shopping templates.",
-    price: 35,
-    category: "books",
-    rating: 4.4,
-    imageUrl: img("slow-cooking"),
-    createdAt: "2026-03-10T10:00:00.000Z",
   },
 
   // ---------------- Sports ----------------
@@ -216,20 +108,8 @@ export const staticItems: Item[] = [
     price: 149,
     category: "sports",
     rating: 4.5,
-    imageUrl: img("trailrun-pro"),
+    imageUrl: u("1542291026-7eec264c27ff"),
     createdAt: "2026-03-12T10:00:00.000Z",
-  },
-  {
-    id: "static-19",
-    title: "Summit 28L Daypack",
-    shortDescription: "Weather-sealed pack with hip-belt pockets.",
-    fullDescription:
-      "Recycled 420D ripstop with welded seams, a hydration sleeve, and load-stabilizing straps for all-day trails.",
-    price: 139,
-    category: "sports",
-    rating: 4.6,
-    imageUrl: img("summit-pack"),
-    createdAt: "2026-03-16T10:00:00.000Z",
   },
   {
     id: "static-20",
@@ -240,20 +120,8 @@ export const staticItems: Item[] = [
     price: 79,
     category: "sports",
     rating: 4.5,
-    imageUrl: img("cork-mat"),
+    imageUrl: u("1545205597-3d9d02c29597"),
     createdAt: "2026-03-19T10:00:00.000Z",
-  },
-  {
-    id: "static-21",
-    title: "Carbon Cycling Bottle",
-    shortDescription: "Insulated 600 ml bottle for road and gravel.",
-    fullDescription:
-      "Double-wall vacuum insulation keeps drinks cold for 12 hours and fits standard cages with a no-leak twist cap.",
-    price: 39,
-    category: "sports",
-    rating: 4.3,
-    imageUrl: img("carbon-bottle"),
-    createdAt: "2026-03-22T10:00:00.000Z",
   },
 
   // ---------------- Beauty ----------------
@@ -266,43 +134,7 @@ export const staticItems: Item[] = [
     price: 49,
     category: "beauty",
     rating: 4.3,
-    imageUrl: img("glow-serum"),
+    imageUrl: u("1556228720-195a672e8a03"),
     createdAt: "2026-03-25T10:00:00.000Z",
-  },
-  {
-    id: "static-22",
-    title: "Cedar & Sage Candle",
-    shortDescription: "60-hour soy candle in a refillable ceramic vessel.",
-    fullDescription:
-      "Hand-poured with a natural cotton wick. Notes of cedarwood, dry sage, and a whisper of black pepper.",
-    price: 42,
-    category: "beauty",
-    rating: 4.7,
-    imageUrl: img("cedar-candle"),
-    createdAt: "2026-03-28T10:00:00.000Z",
-  },
-  {
-    id: "static-23",
-    title: "Silk Sleep Mask",
-    shortDescription: "22 momme mulberry silk with adjustable strap.",
-    fullDescription:
-      "Helps reduce friction on skin and hair while blocking light. OEKO-TEX certified and machine-washable in a mesh bag.",
-    price: 35,
-    category: "beauty",
-    rating: 4.4,
-    imageUrl: img("silk-mask"),
-    createdAt: "2026-03-31T10:00:00.000Z",
-  },
-  {
-    id: "static-24",
-    title: "Marble Stone Roller",
-    shortDescription: "Cooling facial roller with dual heads.",
-    fullDescription:
-      "Carved from natural marble to soothe puffiness and improve absorption of serums. Includes a velvet travel pouch.",
-    price: 29,
-    category: "beauty",
-    rating: 4.2,
-    imageUrl: img("stone-roller"),
-    createdAt: "2026-04-02T10:00:00.000Z",
   },
 ];
