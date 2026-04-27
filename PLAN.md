@@ -2,7 +2,7 @@
 
 ## Current Codebase Status
 
-After Phase 2 implementation:
+After Phase 3 implementation:
 
 **Phase 0 verified (still passing):**
 - ✅ Next.js 16 (App Router) + TypeScript scaffolded
@@ -42,12 +42,18 @@ After Phase 2 implementation:
 - ✅ [src/app/about/page.tsx](jikmunn-odyssey-task-one/src/app/about/page.tsx) — About page: hero (story + image + dual CTA) + 4-card values section + create-account CTA card
 - ✅ [src/app/contact/page.tsx](jikmunn-odyssey-task-one/src/app/contact/page.tsx) — Contact page: centered hero + 4 contact channels (email/phone/chat/visit) + FAQ list
 - ✅ All 6 static items prerender as SSG: `/items/static-1` … `/items/static-6`
+
+**Phase 3 verified present & working:**
+- ✅ [src/app/login/page.tsx](jikmunn-odyssey-task-one/src/app/login/page.tsx) — `/login` page: `Suspense`-wrapped client component (so `useSearchParams` doesn't break SSG), `react-hook-form` + `zod` validation (email + min-6 password), email/password inputs with `Mail`/`Lock` left icons + inline error messages, submit button with `isLoading` state, divider, **Continue with Google** button (inline brand SVG), `?redirect=` support, link to `/register`, friendly amber banner when `firebaseEnabled === false`, `react-hot-toast` success/error toasts, `router.push(redirect)` + `router.refresh()` on success
+- ✅ [src/app/register/page.tsx](jikmunn-odyssey-task-one/src/app/register/page.tsx) — `/register` page: `react-hook-form` + `zod` schema with `name` (2–60 chars), `email`, `password` (min 6), `confirmPassword` + `.refine()` cross-field match check, 4 inputs with icons + per-field error messages, submit calls `register(email, password, name)` (sets `displayName` via `updateProfile`), Google OAuth button, friendly Firebase-disabled banner, link to `/login`, redirects to `/` on success
+- ✅ Both pages share consistent card layout (max-w-md, surface bg, brand-accented icon header, divider before Google CTA) and disable both buttons while either submission is in flight
+- ✅ [src/context/AuthContext.tsx](jikmunn-odyssey-task-one/src/context/AuthContext.tsx) wired end-to-end via `useAuth()`: `login`, `register` (with displayName via `updateProfile`), `loginWithGoogle` (`signInWithPopup` + `GoogleAuthProvider`), `logout`, `firebaseEnabled` flag — Firebase env-empty path is graceful (forms throw a friendly error captured by toast)
+- ✅ [Navbar](jikmunn-odyssey-task-one/src/components/layout/Navbar.tsx) already reflects auth state: shows `Login`/`Register` buttons when logged-out, user dropdown (avatar initials, name, email, **Add Product**, **Manage Products**, **Logout**) when logged-in — verified working with the new pages
 - ✅ `npm run lint` — clean (0 errors, 0 warnings)
 - ✅ `npx tsc --noEmit` — clean
-- ✅ `npm run build` — production build passes; 13 static routes prerendered (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/_not-found`)
+- ✅ `npm run build` — production build passes; **15 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/login`, `/register`, `/_not-found`)
 
 **Not yet implemented (deferred to later phases):**
-- ⬜ `/login`, `/register` page UIs (AuthContext is ready) — Phase 3
 - ⬜ Protected routes (`/items/add`, `/items/manage`) + ProtectedRoute guard + itemsStore — Phase 4
 - ⬜ Polish pass — Phase 5
 - ⬜ README rewrite + Vercel deploy — Phase 6
@@ -56,12 +62,12 @@ After Phase 2 implementation:
 - ✅ Phase 0 — Decide & Setup — **100% COMPLETE**
 - ✅ Phase 1 — Design System & Layout Shell — **100% COMPLETE**
 - ✅ Phase 2 — Public Pages — **100% COMPLETE**
-- ⬜ Phase 3 — Firebase Authentication (login/register UI) — 0% (context already built ahead)
+- ✅ Phase 3 — Firebase Authentication — **100% COMPLETE**
 - ⬜ Phase 4 — Protected Routes — 0%
 - ⬜ Phase 5 — UI Polish & Responsiveness — 0%
 - ⬜ Phase 6 — Quality, Deploy, Submit — 0%
 
-**Remaining phases: 4** (Phases 3 → 6).
+**Remaining phases: 3** (Phases 4 → 6).
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 
