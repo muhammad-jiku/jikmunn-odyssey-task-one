@@ -2,7 +2,7 @@
 
 ## Current Codebase Status
 
-After Phase 5 implementation:
+After Phase 6 implementation:
 
 **Phase 0 verified (still passing):**
 - ✅ Next.js 16 (App Router) + TypeScript scaffolded
@@ -83,8 +83,21 @@ After Phase 5 implementation:
 - ✅ `npx tsc --noEmit` — clean
 - ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/_not-found`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`)
 
-**Not yet implemented (deferred to later phases):**
-- ⬜ README rewrite + Vercel deploy — Phase 6
+**Phase 6 verified present & working:**
+- ✅ [README.md](jikmunn-odyssey-task-one/README.md) — full project README replacing the create-next-app boilerplate: project description, key-features list, tech-stack table, project-structure tree, **Getting started** (prerequisites, install, `.env.local` setup, run scripts), **Firebase setup** walkthrough (enable Email/Password + Google, copy Web App config, add authorized domains, note on `localStorage` user-items store), **Route summary** table covering all 10 routes (public/SSG/protected), **Deploying to Vercel** step-by-step (env vars, Firebase authorized-domain post-deploy step), and **Quality gates** table
+- ✅ [package.json](jikmunn-odyssey-task-one/package.json) — added `"typecheck": "tsc --noEmit"` script (alongside existing `dev`/`build`/`start`/`lint`) so the documented quality gate (`npm run typecheck`) actually exists
+- ✅ [.env.example](jikmunn-odyssey-task-one/.env.example) — already in place with all six `NEXT_PUBLIC_FIREBASE_*` keys, referenced from README
+- ✅ No stray `console.log` / `debugger` / TODO leftovers in `src/` (verified via repo grep — only intentional `console.error` / `console.warn` calls inside catch blocks remain)
+- ✅ `npm run lint` — clean (0 errors, 0 warnings)
+- ✅ `npm run typecheck` (newly added) — clean
+- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/_not-found`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`)
+- ✅ Repo already pushed to <https://github.com/muhammad-jiku/jikmunn-odyssey-task-one> on `main` (Phases 0–5 commits 4a8876f → d33b377 → 6777106 → d65b328 → 16b1190 → 128f5e5)
+
+**External submission steps (must be done outside the codebase — cannot be automated from here):**
+- ⏳ Create the Firebase project, enable Email/Password + Google sign-in, and paste the Web App config into `.env.local` (and into Vercel env vars). README “🔥 Firebase setup” covers this end-to-end.
+- ⏳ Import the GitHub repo on <https://vercel.com/new>, paste the same `NEXT_PUBLIC_FIREBASE_*` env vars, deploy.
+- ⏳ Add the resulting `*.vercel.app` domain to Firebase Auth → Authorized domains.
+- ⏳ Smoke-test login / register / Google OAuth / add product / manage product on the live URL, then submit GitHub link + live demo URL.
 
 **Phase progress:**
 - ✅ Phase 0 — Decide & Setup — **100% COMPLETE**
@@ -93,9 +106,9 @@ After Phase 5 implementation:
 - ✅ Phase 3 — Firebase Authentication — **100% COMPLETE**
 - ✅ Phase 4 — Protected Routes — **100% COMPLETE**
 - ✅ Phase 5 — UI Polish & Responsiveness — **100% COMPLETE**
-- ⬜ Phase 6 — Quality, Deploy, Submit — 0%
+- ✅ Phase 6 — Quality, Deploy, Submit — **100% COMPLETE** (codebase deliverables)
 
-**Remaining phases: 1** (Phase 6).
+**Remaining phases: 0** — all coding work for the assessment is finished. The only remaining items are the external Vercel deployment + Firebase project provisioning steps documented in the README, which require account access and cannot be performed inside the repo.
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 
