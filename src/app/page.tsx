@@ -68,7 +68,7 @@ export default function Home() {
       <Section bleed bg="surface" className="overflow-hidden py-20 sm:py-24 lg:py-28">
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div>
+            <div className="animate-fade-in-up">
               <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-200">
                 <Sparkles className="h-3.5 w-3.5" /> New season collection is live
               </span>
@@ -113,7 +113,7 @@ export default function Home() {
               </dl>
             </div>
 
-            <div className="relative">
+            <div className="relative animate-fade-in-up animation-delay-100">
               <div className="relative aspect-[5/4] overflow-hidden rounded-[var(--radius-lg)] border border-border bg-surface-muted shadow-[var(--shadow-elevated)]">
                 <Image
                   src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200"

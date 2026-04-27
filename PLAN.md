@@ -2,7 +2,7 @@
 
 ## Current Codebase Status
 
-After Phase 4 implementation:
+After Phase 5 implementation:
 
 **Phase 0 verified (still passing):**
 - ✅ Next.js 16 (App Router) + TypeScript scaffolded
@@ -68,8 +68,22 @@ After Phase 4 implementation:
 - ✅ `npx tsc --noEmit` — clean
 - ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`, `/_not-found`)
 
+**Phase 5 verified present & working:**
+- ✅ [src/app/globals.css](jikmunn-odyssey-task-one/src/app/globals.css) — added micro-animation system: `@keyframes odyssey-fade-in`, `odyssey-fade-in-up`, `odyssey-shimmer`; utility classes `.animate-fade-in`, `.animate-fade-in-up` with cubic-easing; staggered delay utilities (`.animation-delay-100/200/300`); brand-tinted `::selection` (light + dark); `html { scroll-behavior: smooth }`; **`@media (prefers-reduced-motion: reduce)`** override that neutralizes animations + transitions for accessibility
+- ✅ [src/components/ui/Skeleton.tsx](jikmunn-odyssey-task-one/src/components/ui/Skeleton.tsx) — `Skeleton` primitive (a11y `role="status"` + `aria-label`/`aria-live`) using shimmer keyframe; composed `ItemCardSkeleton` (mirrors ItemCard layout: 4:3 image block, badge, title, two text rows, price + button row) and `ItemsGridSkeleton` (responsive 1→2→3→4 col grid, default 8 cards) — all dark-mode aware
+- ✅ [src/components/ui/index.ts](jikmunn-odyssey-task-one/src/components/ui/index.ts) — barrel export now exposes `Skeleton`, `ItemCardSkeleton`, `ItemsGridSkeleton`, `SkeletonProps`
+- ✅ [src/app/not-found.tsx](jikmunn-odyssey-task-one/src/app/not-found.tsx) — custom **404 page** styled to match shell: `Section bg="surface"` + centered card with brand-tinted `Compass` icon, “Error 404” eyebrow, headline, subcopy, dual CTAs (`Back to home` primary + `Browse products` outline), `animate-fade-in-up` entrance, dedicated `<title>` metadata
+- ✅ [src/app/items/loading.tsx](jikmunn-odyssey-task-one/src/app/items/loading.tsx) — Next.js route-level **loading skeleton** for `/items` matching the real layout: header copy skeletons + filter-bar skeleton row (search/category/sort + range row) + `ItemsGridSkeleton count={8}` (Suspense fallback when navigating into Shop)
+- ✅ [src/app/page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — applied `animate-fade-in-up` to hero copy column and `animate-fade-in-up animation-delay-100` to the hero image column for a subtle staggered entrance (no extra deps; honors `prefers-reduced-motion`)
+- ✅ Existing focus-visible ring (`outline: 2px solid var(--brand-500)`) verified globally and on all interactive elements (Buttons, Inputs, Card links via `focus-within:` already present on `ItemCard`, Navbar links, dropdown items, mobile hamburger)
+- ✅ Hover-lift / hover-zoom polish already in `ItemCard` (`hover:-translate-y-0.5`, image `group-hover:scale-105`) and feature/testimonial cards on landing — verified consistent
+- ✅ Empty / error states already polished in earlier phases (ItemsBrowser “Reset filters”, manage-page empty state, UserItemDetailsClient “Product not found”) — re-verified intact
+- ✅ Responsive audit at 360 / 768 / 1280 — no layout breaks (grid scales 1→2→3→4 cols; Navbar sheet on mobile; manage-page table → stacked cards; hero stacks at `lg:` breakpoint)
+- ✅ `npm run lint` — clean (0 errors, 0 warnings)
+- ✅ `npx tsc --noEmit` — clean
+- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/_not-found`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`)
+
 **Not yet implemented (deferred to later phases):**
-- ⬜ Polish pass — Phase 5
 - ⬜ README rewrite + Vercel deploy — Phase 6
 
 **Phase progress:**
@@ -78,10 +92,10 @@ After Phase 4 implementation:
 - ✅ Phase 2 — Public Pages — **100% COMPLETE**
 - ✅ Phase 3 — Firebase Authentication — **100% COMPLETE**
 - ✅ Phase 4 — Protected Routes — **100% COMPLETE**
-- ⬜ Phase 5 — UI Polish & Responsiveness — 0%
+- ✅ Phase 5 — UI Polish & Responsiveness — **100% COMPLETE**
 - ⬜ Phase 6 — Quality, Deploy, Submit — 0%
 
-**Remaining phases: 2** (Phases 5 → 6).
+**Remaining phases: 1** (Phase 6).
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 

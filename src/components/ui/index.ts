@@ -8,6 +8,8 @@ export { Input } from "./Input";
 export type { InputProps } from "./Input";
 export { Section } from "./Section";
 export type { SectionProps } from "./Section";
+export { ItemCardSkeleton, ItemsGridSkeleton, Skeleton } from "./Skeleton";
+export type { SkeletonProps } from "./Skeleton";
 export { Spinner } from "./Spinner";
 export type { SpinnerProps } from "./Spinner";
 

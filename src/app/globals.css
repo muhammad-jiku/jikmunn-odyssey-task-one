@@ -82,3 +82,110 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Smooth scrolling for in-page anchors */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color uses brand */
+::selection {
+  background: var(--brand-100);
+  color: var(--brand-900);
+}
+@media (prefers-color-scheme: dark) {
+  ::selection {
+    background: var(--brand-800);
+    color: var(--brand-50);
+  }
+}
+
+/* ---- Animations ---- */
+@keyframes odyssey-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes odyssey-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes odyssey-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.animate-fade-in {
+  animation: odyssey-fade-in 0.4s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: odyssey-fade-in-up 0.5s ease-out both;
+}
+
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Skeleton loading utility */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--surface-muted);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  background-size: 800px 100%;
+  animation: odyssey-shimmer 1.4s infinite linear;
+}
+@media (prefers-color-scheme: dark) {
+  .skeleton::after {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 100%
+    );
+  }
+}
+
+/* Honor reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
