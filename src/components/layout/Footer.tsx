@@ -59,7 +59,7 @@ export function Footer() {
               <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] bg-brand-600 text-white">
                 <ShoppingBag className="h-4 w-4" />
               </span>
-              <span className="text-lg">Jikmunn</span>
+              <span className="text-lg">Jikmunn&apos;s Odyssey</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-foreground/70">
               A curated marketplace for thoughtfully designed products across
@@ -162,7 +162,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-foreground/60 sm:flex-row">
-          <p>© {year} Jikmunn. All rights reserved.</p>
+          <p>© {year} Jikmunn&apos;s Odyssey. All rights reserved.</p>
           <p>Built with Next.js, Tailwind, and Firebase.</p>
         </div>
       </Container>

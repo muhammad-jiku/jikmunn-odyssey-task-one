@@ -1,9 +1,10 @@
+import { ContactForm } from "@/components/contact/ContactForm";
 import { Container, Section } from "@/components/ui";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact — Odyssey",
+  title: "Contact — Jikmunn's Odyssey",
   description:
     "Have a question, feedback, or partnership idea? We'd love to hear from you.",
 };
@@ -12,14 +13,14 @@ const channels = [
   {
     icon: Mail,
     title: "Email us",
-    body: "support@odyssey.example",
-    href: "mailto:support@odyssey.example",
+    body: "muhammadjiku364@gmail.com",
+    href: "mailto:muhammadjiku364@gmail.com",
   },
   {
     icon: Phone,
     title: "Call us",
-    body: "+1 (415) 555-0142",
-    href: "tel:+14155550142",
+    body: "(+880) 1855-613783",
+    href: "tel:+8801855613783",
   },
   {
     icon: MessageCircle,
@@ -68,6 +69,18 @@ export default function ContactPage() {
               <p className="mt-1.5 text-sm text-foreground/70">{body}</p>
             </a>
           ))}
+        </div>
+
+        <div className="mx-auto mt-12 max-w-3xl rounded-[var(--radius-lg)] border border-border bg-background p-8 shadow-[var(--shadow-card)] sm:p-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            Send us a message
+          </h2>
+          <p className="mt-1.5 text-sm text-foreground/70">
+            Fill in the form below and we&apos;ll get back to you by email.
+          </p>
+          <div className="mt-6">
+            <ContactForm />
+          </div>
         </div>
 
         <div className="mx-auto mt-12 max-w-3xl rounded-[var(--radius-lg)] border border-border bg-background p-8 shadow-[var(--shadow-card)] sm:p-10">

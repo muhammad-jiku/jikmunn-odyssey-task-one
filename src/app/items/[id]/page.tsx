@@ -1,8 +1,15 @@
+import { AddToCartButton } from "@/components/items/AddToCartButton";
 import { ItemCard } from "@/components/items/ItemCard";
 import { UserItemDetailsClient } from "@/components/items/UserItemDetailsClient";
 import { Badge, Button, Container, Section } from "@/components/ui";
 import { staticItems } from "@/data/items";
-import { CATEGORY_LABELS, formatDate, formatPrice } from "@/lib/items-utils";
+import
+  {
+    CATEGORY_LABELS,
+    formatDate,
+    formatPrice,
+    shouldUnoptimizeImage,
+  } from "@/lib/items-utils";
 import { ArrowLeft, CalendarDays, Star, Tag } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -21,9 +28,9 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const item = staticItems.find((i) => i.id === id);
-  if (!item) return { title: "Product not found — Odyssey" };
+  if (!item) return { title: "Product not found — Jikmunn's Odyssey" };
   return {
-    title: `${item.title} — Odyssey`,
+    title: `${item.title} — Jikmunn's Odyssey`,
     description: item.shortDescription,
   };
 }
@@ -63,6 +70,7 @@ export default async function ItemDetailPage({ params }: PageProps) {
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                   priority
+                  unoptimized={shouldUnoptimizeImage(item.imageUrl)}
                 />
               ) : (
                 <div className="grid h-full place-items-center text-foreground/50">
@@ -130,7 +138,7 @@ export default async function ItemDetailPage({ params }: PageProps) {
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button size="lg">Add to cart</Button>
+                <AddToCartButton item={item} />
                 <Link href="/items">
                   <Button size="lg" variant="outline">
                     Continue shopping

@@ -2,22 +2,28 @@
 
 import { Button, Container } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { useTheme } from "@/context/ThemeContext";
 import clsx from "clsx";
 import
-    {
-        ChevronDown,
-        LogIn,
-        LogOut,
-        Menu,
-        PackagePlus,
-        Settings2,
-        ShoppingBag,
-        UserPlus,
-        X,
-    } from "lucide-react";
+  {
+    ChevronDown,
+    LogIn,
+    LogOut,
+    Menu,
+    Moon,
+    PackagePlus,
+    Settings2,
+    ShoppingBag,
+    ShoppingCart,
+    Sun,
+    UserPlus,
+    X,
+  } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { NAV_LINKS } from "./nav-links";
 
 function getInitials(name?: string | null, email?: string | null) {
@@ -29,6 +35,8 @@ function getInitials(name?: string | null, email?: string | null) {
 export function Navbar() {
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
+  const { resolved: themeResolved, toggle: toggleTheme } = useTheme();
+  const { itemCount } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -51,7 +59,14 @@ export function Navbar() {
 
   const handleLogout = async () => {
     setMenuOpen(false);
-    await logout();
+    try {
+      await logout();
+      toast.success("Signed out");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to sign out.";
+      toast.error(msg.replace("Firebase: ", ""));
+    }
   };
 
   return (
@@ -65,7 +80,7 @@ export function Navbar() {
           <span className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] bg-brand-600 text-white">
             <ShoppingBag className="h-4 w-4" />
           </span>
-          <span className="text-base sm:text-lg">Jikmunn</span>
+          <span className="text-base sm:text-lg">Jikmunn&apos;s Odyssey</span>
         </Link>
 
         {/* Desktop nav */}
@@ -94,6 +109,39 @@ export function Navbar() {
 
         {/* Auth area (desktop) */}
         <div className="hidden items-center gap-2 md:flex">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              themeResolved === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+            }
+            title={
+              themeResolved === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+            }
+            className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] text-foreground/70 transition-colors hover:bg-surface-muted hover:text-foreground"
+          >
+            {themeResolved === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </button>
+          <Link
+            href="/cart"
+            aria-label={`Cart (${itemCount} item${itemCount === 1 ? "" : "s"})`}
+            className="relative grid h-9 w-9 place-items-center rounded-[var(--radius-md)] text-foreground/70 transition-colors hover:bg-surface-muted hover:text-foreground"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {itemCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold leading-none text-white">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            )}
+          </Link>
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-[var(--radius-md)] bg-surface-muted" />
           ) : user ? (
@@ -173,15 +221,49 @@ export function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] text-foreground hover:bg-surface-muted md:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              themeResolved === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+            }
+            className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] text-foreground/70 hover:bg-surface-muted hover:text-foreground"
+          >
+            {themeResolved === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </button>
+          <Link
+            href="/cart"
+            aria-label={`Cart (${itemCount} item${itemCount === 1 ? "" : "s"})`}
+            className="relative grid h-10 w-10 place-items-center rounded-[var(--radius-md)] text-foreground/70 hover:bg-surface-muted hover:text-foreground"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {itemCount > 0 && (
+              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold leading-none text-white">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            )}
+          </Link>
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] text-foreground hover:bg-surface-muted"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </Container>
 
       {/* Mobile sheet */}

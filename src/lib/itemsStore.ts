@@ -4,8 +4,8 @@ import { staticItems } from "@/data/items";
 import type { Item } from "@/types/item";
 import { useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "odyssey:user-items:v1";
-const CHANGE_EVENT = "odyssey:user-items:change";
+const STORAGE_KEY = "jikmunn-odyssey:user-items:v1";
+const CHANGE_EVENT = "jikmunn-odyssey:user-items:change";
 
 function isBrowser() {
   return typeof window !== "undefined";
@@ -96,27 +96,62 @@ function subscribe(cb: () => void) {
   };
 }
 
+// Cached snapshots so useSyncExternalStore only sees a new reference
+// when the underlying data actually changes. Returning a fresh array
+// from getSnapshot causes "Maximum update depth exceeded" infinite loops.
+const EMPTY_ITEMS: Item[] = [];
+let cachedRaw: string | null | undefined = undefined;
+let cachedUserSnapshot: Item[] = EMPTY_ITEMS;
+let cachedAllSnapshot: Item[] = staticItems;
+
 function getUserSnapshot(): Item[] {
-  return readUserItems();
+  if (!isBrowser()) return EMPTY_ITEMS;
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (raw === cachedRaw) return cachedUserSnapshot;
+  cachedRaw = raw;
+  let next: Item[] = EMPTY_ITEMS;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) next = parsed as Item[];
+    } catch {
+      next = EMPTY_ITEMS;
+    }
+  }
+  cachedUserSnapshot = next;
+  cachedAllSnapshot =
+    next.length === 0 ? staticItems : [...next, ...staticItems];
+  return cachedUserSnapshot;
 }
 
-function getServerSnapshot(): Item[] {
-  return [];
+function getAllSnapshot(): Item[] {
+  if (!isBrowser()) return staticItems;
+  // Ensure the user snapshot cache is fresh, then return the cached merge.
+  getUserSnapshot();
+  return cachedAllSnapshot;
+}
+
+function getServerUserSnapshot(): Item[] {
+  return EMPTY_ITEMS;
+}
+
+function getServerAllSnapshot(): Item[] {
+  return staticItems;
 }
 
 export function useUserItems(): Item[] {
-  return useSyncExternalStore(subscribe, getUserSnapshot, getServerSnapshot);
+  return useSyncExternalStore(
+    subscribe,
+    getUserSnapshot,
+    getServerUserSnapshot,
+  );
 }
 
 /**
  * Returns the union of static items and locally-added user items.
- * Hydration-safe: returns staticItems on first render, then merges
- * after mount to avoid SSR/CSR mismatch.
+ * Both server and first-client snapshots return `staticItems` so hydration
+ * matches; user items merge in after the first store change.
  */
 export function useAllItems(): Item[] {
-  const userItems = useUserItems();
-  // useSyncExternalStore already returns [] on the server snapshot, so this
-  // is hydration-safe (server: just static; client first paint: just static;
-  // then merges in user items in a layout effect).
-  return [...userItems, ...staticItems];
+  return useSyncExternalStore(subscribe, getAllSnapshot, getServerAllSnapshot);
 }

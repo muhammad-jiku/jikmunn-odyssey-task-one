@@ -1,5 +1,6 @@
 "use client";
 
+import { AddToCartButton } from "@/components/items/AddToCartButton";
 import { ItemCard } from "@/components/items/ItemCard";
 import { Badge, Button, Container, Section } from "@/components/ui";
 import { CATEGORY_LABELS, formatDate, formatPrice } from "@/lib/items-utils";
@@ -26,24 +27,30 @@ export function UserItemDetailsClient({ id }: Props) {
 
   if (!item) {
     return (
-      <Section className="py-16 sm:py-20" bg="surface">
+      <Section bg="surface" className="py-20 sm:py-28">
         <Container>
-          <div className="mx-auto max-w-md rounded-[var(--radius-lg)] border border-dashed border-border bg-background p-10 text-center shadow-[var(--shadow-card)]">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-200">
-              <PackageOpen className="h-6 w-6" />
+          <div className="mx-auto max-w-xl rounded-[var(--radius-lg)] border border-border bg-background p-10 text-center shadow-[var(--shadow-card)] animate-fade-in-up sm:p-12">
+            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-200">
+              <PackageOpen className="h-7 w-7" />
             </div>
-            <h1 className="mt-4 text-xl font-semibold text-foreground">
+            <p className="mt-6 text-sm font-semibold uppercase tracking-widest text-brand-600">
+              Error 404
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Product not found
             </h1>
-            <p className="mt-1.5 text-sm text-foreground/70">
+            <p className="mx-auto mt-3 max-w-md text-sm text-foreground/70 sm:text-base">
               The product you&apos;re looking for doesn&apos;t exist or was
-              removed.
+              removed. Try browsing the full catalog.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link href="/items">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/">
                 <Button leftIcon={<ArrowLeft className="h-4 w-4" />}>
-                  Back to all products
+                  Back to home
                 </Button>
+              </Link>
+              <Link href="/items">
+                <Button variant="outline">Browse products</Button>
               </Link>
             </div>
           </div>
@@ -140,7 +147,7 @@ export function UserItemDetailsClient({ id }: Props) {
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button size="lg">Add to cart</Button>
+                <AddToCartButton item={item} />
                 <Link href="/items">
                   <Button size="lg" variant="outline">
                     Continue shopping

@@ -4,9 +4,9 @@ import { staticItems } from "@/data/items";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shop — Odyssey",
+  title: "Shop — Jikmunn's Odyssey",
   description:
-    "Browse all Odyssey products. Search by name, filter by category, and dial in your price range.",
+    "Browse all Jikmunn's Odyssey products. Search by name, filter by category, and dial in your price range.",
 };
 
 export default function ItemsPage() {

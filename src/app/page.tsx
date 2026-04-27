@@ -43,7 +43,7 @@ const testimonials = [
     name: "Amelia R.",
     role: "Product Designer",
     quote:
-      "Odyssey is my go-to for considered everyday objects. The curation feels like a friend with great taste.",
+      "Jikmunn's Odyssey is my go-to for considered everyday objects. The curation feels like a friend with great taste.",
   },
   {
     name: "Daniel K.",
@@ -55,7 +55,7 @@ const testimonials = [
     name: "Priya S.",
     role: "Founder, Nest Studio",
     quote:
-      "I've furnished my entire studio from Odyssey. Quality, price, and delivery — all on point.",
+      "I've furnished my entire studio from Jikmunn's Odyssey. Quality, price, and delivery — all on point.",
   },
 ];
 
@@ -144,7 +144,7 @@ export default function Home() {
 
       {/* Features */}
       <Section
-        eyebrow="Why Odyssey"
+        eyebrow="Why Jikmunn's Odyssey"
         title="Built around what matters"
         description="Every detail of the buying experience is designed to feel calm, fast, and trustworthy."
       >
@@ -240,7 +240,7 @@ export default function Home() {
                 Members save more
               </Badge>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-                Join Odyssey to unlock your wishlist & exclusive drops.
+                Join Jikmunn&apos;s Odyssey to unlock your wishlist &amp; exclusive drops.
               </h2>
               <p className="mt-3 max-w-xl text-base text-white/80">
                 Create a free account to save products, manage your listings,

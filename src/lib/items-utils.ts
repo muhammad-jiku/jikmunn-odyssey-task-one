@@ -33,3 +33,23 @@ export function formatDate(iso: string) {
     day: "numeric",
   }).format(new Date(iso));
 }
+
+// Hosts that match next.config.ts > images.remotePatterns. For any other
+// host (typically a user-supplied URL) we render the image with `unoptimized`
+// so the Next.js Image component doesn't reject it at runtime.
+const OPTIMIZED_IMAGE_HOSTS = new Set([
+  "images.unsplash.com",
+  "picsum.photos",
+  "fastly.picsum.photos",
+]);
+
+export function shouldUnoptimizeImage(src: string | undefined | null): boolean {
+  if (!src) return true;
+  if (src.startsWith("data:")) return true;
+  try {
+    const host = new URL(src).hostname;
+    return !OPTIMIZED_IMAGE_HOSTS.has(host);
+  } catch {
+    return true;
+  }
+}

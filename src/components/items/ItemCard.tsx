@@ -1,5 +1,10 @@
 import { Badge, Button } from "@/components/ui";
-import { CATEGORY_LABELS, formatPrice } from "@/lib/items-utils";
+import
+  {
+    CATEGORY_LABELS,
+    formatPrice,
+    shouldUnoptimizeImage,
+  } from "@/lib/items-utils";
 import type { Item } from "@/types/item";
 import { ArrowRight, Star } from "lucide-react";
 import Image from "next/image";
@@ -10,6 +15,7 @@ const PLACEHOLDER_IMAGE =
 
 export function ItemCard({ item }: { item: Item }) {
   const href = `/items/${item.id}` as const;
+  const src = item.imageUrl || PLACEHOLDER_IMAGE;
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border border-border bg-background shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[var(--shadow-elevated)] focus-within:-translate-y-0.5 focus-within:border-brand-300 focus-within:shadow-[var(--shadow-elevated)]">
       <Link
@@ -18,12 +24,12 @@ export function ItemCard({ item }: { item: Item }) {
         aria-label={`View ${item.title}`}
       >
         <Image
-          src={item.imageUrl || PLACEHOLDER_IMAGE}
+          src={src}
           alt={item.title}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          unoptimized={!item.imageUrl}
+          unoptimized={shouldUnoptimizeImage(src)}
         />
         <div className="absolute left-3 top-3">
           <Badge tone="brand">{CATEGORY_LABELS[item.category]}</Badge>

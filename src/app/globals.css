@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Tailwind v4: make the `dark:` variant fire when our root has
+   data-theme="dark" set by the in-app ThemeProvider. */
+@custom-variant dark (&:where([data-theme="dark"] *, [data-theme="dark"]));
+
 :root {
   /* Brand palette — calm, modern e-commerce */
   --brand-50: #eef6ff;
@@ -54,14 +58,12 @@
   --radius-lg: var(--radius-lg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0d14;
-    --foreground: #e7eaf2;
-    --surface: #11151d;
-    --surface-muted: #161b25;
-    --border: #1f2632;
-  }
+[data-theme="dark"] {
+  --background: #0a0d14;
+  --foreground: #e7eaf2;
+  --surface: #11151d;
+  --surface-muted: #161b25;
+  --border: #1f2632;
 }
 
 html,
@@ -83,6 +85,14 @@ body {
   border-radius: 4px;
 }
 
+/* Form controls render their own focus styling via the wrapper border /
+   ring; suppress the global outline so we don't get a double-ring. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
 /* Smooth scrolling for in-page anchors */
 html {
   scroll-behavior: smooth;
@@ -93,11 +103,9 @@ html {
   background: var(--brand-100);
   color: var(--brand-900);
 }
-@media (prefers-color-scheme: dark) {
-  ::selection {
-    background: var(--brand-800);
-    color: var(--brand-50);
-  }
+[data-theme="dark"] ::selection {
+  background: var(--brand-800);
+  color: var(--brand-50);
 }
 
 /* ---- Animations ---- */
@@ -167,15 +175,13 @@ html {
   background-size: 800px 100%;
   animation: odyssey-shimmer 1.4s infinite linear;
 }
-@media (prefers-color-scheme: dark) {
-  .skeleton::after {
-    background-image: linear-gradient(
-      90deg,
-      transparent 0,
-      rgba(255, 255, 255, 0.06) 50%,
-      transparent 100%
-    );
-  }
+[data-theme="dark"] .skeleton::after {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
 }
 
 /* Honor reduced-motion preference */

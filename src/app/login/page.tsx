@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Container, Input } from "@/components/ui";
+import { Button, Container, Input, PasswordInput } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, LogIn, Mail } from "lucide-react";
@@ -62,9 +62,25 @@ function LoginPageInner() {
       router.push(redirect);
       router.refresh();
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Could not sign you in.";
-      toast.error(msg.replace("Firebase: ", ""));
+      const raw = err instanceof Error ? err.message : "";
+      const code =
+        // Firebase errors look like: "Firebase: Error (auth/invalid-credential)."
+        raw.match(/auth\/[a-z-]+/)?.[0] ?? "";
+      const invalid = new Set([
+        "auth/invalid-credential",
+        "auth/wrong-password",
+        "auth/user-not-found",
+        "auth/invalid-email",
+      ]);
+      if (invalid.has(code)) {
+        toast.error("Invalid credentials");
+      } else if (code === "auth/too-many-requests") {
+        toast.error("Too many attempts. Try again later.");
+      } else {
+        toast.error(
+          raw ? raw.replace("Firebase: ", "") : "Could not sign you in.",
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -101,7 +117,7 @@ function LoginPageInner() {
                 Welcome back
               </h1>
               <p className="mt-1.5 text-sm text-foreground/70">
-                Sign in to your Odyssey account to continue.
+                Sign in to your Jikmunn&apos;s Odyssey account to continue.
               </p>
             </div>
 
@@ -127,9 +143,8 @@ function LoginPageInner() {
                 error={errors.email?.message}
                 {...register("email")}
               />
-              <Input
+              <PasswordInput
                 label="Password"
-                type="password"
                 autoComplete="current-password"
                 placeholder="••••••••"
                 leftIcon={<Lock className="h-4 w-4" />}

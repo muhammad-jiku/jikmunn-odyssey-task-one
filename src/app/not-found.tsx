@@ -3,7 +3,7 @@ import { ArrowLeft, Compass, Search } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Page not found — Odyssey",
+  title: "Page not found — Jikmunn's Odyssey",
 };
 
 export default function NotFound() {

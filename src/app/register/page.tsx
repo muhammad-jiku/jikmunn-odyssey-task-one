@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Container, Input } from "@/components/ui";
+import { Button, Container, Input, PasswordInput } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail, User, UserPlus } from "lucide-react";
@@ -55,7 +55,7 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await registerUser(values.email, values.password, values.name);
-      toast.success("Account created — welcome to Odyssey!");
+      toast.success("Account created — welcome to Jikmunn's Odyssey!");
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -133,18 +133,16 @@ export default function RegisterPage() {
                 error={errors.email?.message}
                 {...register("email")}
               />
-              <Input
+              <PasswordInput
                 label="Password"
-                type="password"
                 autoComplete="new-password"
                 placeholder="At least 6 characters"
                 leftIcon={<Lock className="h-4 w-4" />}
                 error={errors.password?.message}
                 {...register("password")}
               />
-              <Input
+              <PasswordInput
                 label="Confirm password"
-                type="password"
                 autoComplete="new-password"
                 placeholder="Re-type your password"
                 leftIcon={<Lock className="h-4 w-4" />}

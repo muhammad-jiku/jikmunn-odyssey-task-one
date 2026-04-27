@@ -3,8 +3,8 @@
 import { Badge, Button, Input } from "@/components/ui";
 import { ALL_CATEGORIES, CATEGORY_LABELS } from "@/lib/items-utils";
 import type { Item, ItemCategory } from "@/types/item";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { ItemCard } from "./ItemCard";
 
 type Sort = "featured" | "price-asc" | "price-desc" | "rating-desc";
@@ -15,6 +15,8 @@ const SORTS: { value: Sort; label: string }[] = [
   { value: "price-desc", label: "Price: High → Low" },
   { value: "rating-desc", label: "Top rated" },
 ];
+
+const PAGE_SIZE = 8;
 
 export function ItemsBrowser({ items }: { items: Item[] }) {
   const [query, setQuery] = useState("");
@@ -63,6 +65,25 @@ export function ItemsBrowser({ items }: { items: Item[] }) {
   const hasActiveFilters =
     query !== "" || category !== "all" || maxPrice < priceCeiling;
 
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  // Whenever filters change, reset to first page so users don't end up on an
+  // empty trailing page.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [query, category, maxPrice, sort]);
+
+  // Clamp page if total shrinks (e.g. filter removed last item on page 3).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const pageStart = (page - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
   function resetFilters() {
     setQuery("");
     setCategory("all");
@@ -75,13 +96,22 @@ export function ItemsBrowser({ items }: { items: Item[] }) {
       {/* Controls */}
       <div className="mb-8 rounded-[var(--radius-lg)] border border-border bg-background p-4 shadow-[var(--shadow-card)] sm:p-5">
         <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto]">
-          <Input
-            placeholder="Search products by name or description…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            leftIcon={<Search className="h-4 w-4" />}
-            aria-label="Search products"
-          />
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="filter-search"
+              className="text-xs font-medium text-foreground/70"
+            >
+              Search
+            </label>
+            <Input
+              id="filter-search"
+              placeholder="Search products by name or description…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              leftIcon={<Search className="h-4 w-4" />}
+              aria-label="Search products"
+            />
+          </div>
 
           <div className="flex flex-col gap-1.5">
             <label
@@ -199,11 +229,74 @@ export function ItemsBrowser({ items }: { items: Item[] }) {
           </div>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {pageItems.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <nav
+              aria-label="Pagination"
+              className="mt-10 flex flex-col items-center justify-between gap-3 sm:flex-row"
+            >
+              <p className="text-xs text-foreground/60">
+                Showing{" "}
+                <span className="font-medium text-foreground">
+                  {pageStart + 1}–
+                  {Math.min(pageStart + PAGE_SIZE, filtered.length)}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium text-foreground">
+                  {filtered.length}
+                </span>
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  leftIcon={<ChevronLeft className="h-3.5 w-3.5" />}
+                  aria-label="Previous page"
+                >
+                  Prev
+                </Button>
+                <ul className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (p) => (
+                      <li key={p}>
+                        <button
+                          type="button"
+                          onClick={() => setPage(p)}
+                          aria-current={p === page ? "page" : undefined}
+                          className={
+                            p === page
+                              ? "grid h-8 min-w-8 place-items-center rounded-[var(--radius-sm)] bg-brand-600 px-2 text-xs font-semibold text-white"
+                              : "grid h-8 min-w-8 place-items-center rounded-[var(--radius-sm)] border border-border px-2 text-xs font-medium text-foreground/80 transition-colors hover:bg-surface-muted"
+                          }
+                        >
+                          {p}
+                        </button>
+                      </li>
+                    ),
+                  )}
+                </ul>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  rightIcon={<ChevronRight className="h-3.5 w-3.5" />}
+                  aria-label="Next page"
+                >
+                  Next
+                </Button>
+              </div>
+            </nav>
+          )}
+        </>
       )}
     </div>
   );
