@@ -1,46 +1,56 @@
+"use client";
+
 import { ItemCard } from "@/components/items/ItemCard";
-import { UserItemDetailsClient } from "@/components/items/UserItemDetailsClient";
 import { Badge, Button, Container, Section } from "@/components/ui";
-import { staticItems } from "@/data/items";
 import { CATEGORY_LABELS, formatDate, formatPrice } from "@/lib/items-utils";
-import { ArrowLeft, CalendarDays, Star, Tag } from "lucide-react";
-import type { Metadata } from "next";
+import { useAllItems } from "@/lib/itemsStore";
+import { ArrowLeft, CalendarDays, PackageOpen, Star, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useMemo } from "react";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
+interface Props {
+  id: string;
 }
 
-export async function generateStaticParams() {
-  return staticItems.map((item) => ({ id: item.id }));
-}
+export function UserItemDetailsClient({ id }: Props) {
+  const all = useAllItems();
+  const item = useMemo(() => all.find((i) => i.id === id), [all, id]);
+  const related = useMemo(
+    () =>
+      item
+        ? all.filter((i) => i.id !== item.id && i.category === item.category).slice(0, 4)
+        : [],
+    [all, item],
+  );
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { id } = await params;
-  const item = staticItems.find((i) => i.id === id);
-  if (!item) return { title: "Product not found — Odyssey" };
-  return {
-    title: `${item.title} — Odyssey`,
-    description: item.shortDescription,
-  };
-}
-
-export default async function ItemDetailPage({ params }: PageProps) {
-  const { id } = await params;
-  const item = staticItems.find((i) => i.id === id);
-  // If the id isn't a known static item, defer to the client component which
-  // can read user-added items from localStorage (and shows a not-found UI if
-  // the id matches nothing there either).
   if (!item) {
-    return <UserItemDetailsClient id={id} />;
+    return (
+      <Section className="py-16 sm:py-20" bg="surface">
+        <Container>
+          <div className="mx-auto max-w-md rounded-[var(--radius-lg)] border border-dashed border-border bg-background p-10 text-center shadow-[var(--shadow-card)]">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-200">
+              <PackageOpen className="h-6 w-6" />
+            </div>
+            <h1 className="mt-4 text-xl font-semibold text-foreground">
+              Product not found
+            </h1>
+            <p className="mt-1.5 text-sm text-foreground/70">
+              The product you&apos;re looking for doesn&apos;t exist or was
+              removed.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link href="/items">
+                <Button leftIcon={<ArrowLeft className="h-4 w-4" />}>
+                  Back to all products
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </Section>
+    );
   }
-
-  const related = staticItems
-    .filter((i) => i.id !== item.id && i.category === item.category)
-    .slice(0, 4);
 
   return (
     <>
@@ -62,7 +72,7 @@ export default async function ItemDetailPage({ params }: PageProps) {
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
-                  priority
+                  unoptimized
                 />
               ) : (
                 <div className="grid h-full place-items-center text-foreground/50">

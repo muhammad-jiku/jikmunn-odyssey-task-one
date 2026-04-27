@@ -2,7 +2,7 @@
 
 ## Current Codebase Status
 
-After Phase 3 implementation:
+After Phase 4 implementation:
 
 **Phase 0 verified (still passing):**
 - ✅ Next.js 16 (App Router) + TypeScript scaffolded
@@ -53,8 +53,22 @@ After Phase 3 implementation:
 - ✅ `npx tsc --noEmit` — clean
 - ✅ `npm run build` — production build passes; **15 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/login`, `/register`, `/_not-found`)
 
+**Phase 4 verified present & working:**
+- ✅ [src/lib/itemsStore.ts](jikmunn-odyssey-task-one/src/lib/itemsStore.ts) — localStorage-backed user-items store: `getUserItems`, `getAllItems` (merge `[...userItems, ...staticItems]`), `findItemById`, `addUserItem` (auto-generates id via `crypto.randomUUID()`, stamps `createdAt`, attaches `ownerId`), `deleteUserItem`, `isUserItem`; `useUserItems` and `useAllItems` React hooks built on `useSyncExternalStore` with cross-tab sync via `storage` event + same-tab sync via custom `odyssey:user-items:change` event; SSR-safe (server snapshot returns `[]`)
+- ✅ [src/components/auth/ProtectedRoute.tsx](jikmunn-odyssey-task-one/src/components/auth/ProtectedRoute.tsx) — client guard: shows centered `Spinner` + status message while `loading`, redirects unauthenticated users to `/login?redirect=<currentPath>` via `router.replace`, gracefully reports when Firebase isn't configured
+- ✅ [src/components/items/AllItemsBrowser.tsx](jikmunn-odyssey-task-one/src/components/items/AllItemsBrowser.tsx) — thin client wrapper that calls `useAllItems()` and renders `<ItemsBrowser items={...} />` so the Shop page sees user-added items live
+- ✅ [src/components/items/UserItemDetailsClient.tsx](jikmunn-odyssey-task-one/src/components/items/UserItemDetailsClient.tsx) — client fallback for `/items/[id]`: looks up via `useAllItems()`, renders the same details layout as the static SSG page (image / title / rating / price / full description / 3-stat info grid / Add-to-cart + Continue-shopping / Related products) when found, or a friendly “Product not found” card with `Back to all products` CTA when missing
+- ✅ [src/app/items/page.tsx](jikmunn-odyssey-task-one/src/app/items/page.tsx) — updated to render `<AllItemsBrowser />` (was `<ItemsBrowser items={staticItems} />`), so user-added products appear on Shop alongside the curated catalog
+- ✅ [src/app/items/\[id\]/page.tsx](jikmunn-odyssey-task-one/src/app/items/[id]/page.tsx) — server route now delegates to `<UserItemDetailsClient id={id} />` when `staticItems.find(...)` misses (instead of `notFound()`), preserving SSG for known static items while still serving user items at the same URL
+- ✅ [src/app/items/add/page.tsx](jikmunn-odyssey-task-one/src/app/items/add/page.tsx) — protected `/items/add`: `react-hook-form` + `zod` schema (`title` 3–80, `shortDescription` 10–160, `fullDescription` 20–2000, `price` 0–100000 via `valueAsNumber`, `category` enum of all 6 categories, `rating` 0–5, optional `imageUrl` validated as `https?://`), 7 fields incl. `<textarea>` for full description and `<select>` for category, brand-accented header with `PackagePlus` icon, Save + Cancel buttons, success toast + redirect to `/items/manage`
+- ✅ [src/app/items/manage/page.tsx](jikmunn-odyssey-task-one/src/app/items/manage/page.tsx) — protected `/items/manage`: live list via `useUserItems()`; **desktop table** (Product image+title+desc, Category badge, Price, Added date, View + Delete actions); **mobile stacked cards** with same data; per-row `Delete` triggers `window.confirm()` then `deleteUserItem`, success toast; rich empty state (icon, copy, primary CTA to `/items/add`); page header with count + `Add product` button
+- ✅ Both protected routes wrapped in `<ProtectedRoute>` — unauthenticated visitors get redirected to `/login?redirect=...`
+- ✅ Existing Navbar dropdown (`Add Product`, `Manage Products`) already linked to these routes — verified end-to-end
+- ✅ `npm run lint` — clean (0 errors, 0 warnings)
+- ✅ `npx tsc --noEmit` — clean
+- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`, `/_not-found`)
+
 **Not yet implemented (deferred to later phases):**
-- ⬜ Protected routes (`/items/add`, `/items/manage`) + ProtectedRoute guard + itemsStore — Phase 4
 - ⬜ Polish pass — Phase 5
 - ⬜ README rewrite + Vercel deploy — Phase 6
 
@@ -63,11 +77,11 @@ After Phase 3 implementation:
 - ✅ Phase 1 — Design System & Layout Shell — **100% COMPLETE**
 - ✅ Phase 2 — Public Pages — **100% COMPLETE**
 - ✅ Phase 3 — Firebase Authentication — **100% COMPLETE**
-- ⬜ Phase 4 — Protected Routes — 0%
+- ✅ Phase 4 — Protected Routes — **100% COMPLETE**
 - ⬜ Phase 5 — UI Polish & Responsiveness — 0%
 - ⬜ Phase 6 — Quality, Deploy, Submit — 0%
 
-**Remaining phases: 3** (Phases 4 → 6).
+**Remaining phases: 2** (Phases 5 → 6).
 
 **Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
 

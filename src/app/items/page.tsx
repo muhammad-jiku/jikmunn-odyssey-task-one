@@ -1,4 +1,4 @@
-import { ItemsBrowser } from "@/components/items/ItemsBrowser";
+import { AllItemsBrowser } from "@/components/items/AllItemsBrowser";
 import { Container, Section } from "@/components/ui";
 import { staticItems } from "@/data/items";
 import type { Metadata } from "next";
@@ -24,7 +24,7 @@ export default function ItemsPage() {
             {staticItems.length}+ thoughtfully chosen items, updated weekly.
           </p>
         </header>
-        <ItemsBrowser items={staticItems} />
+        <AllItemsBrowser />
       </Container>
     </Section>
   );
