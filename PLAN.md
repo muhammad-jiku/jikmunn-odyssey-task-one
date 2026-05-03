@@ -453,7 +453,7 @@ Exit criteria:
 Tasks:
 
 - Deploy frontend to Vercel
-- Deploy backend to Render/Railway/VPS
+- Deploy backend to Vercel and create vercel.json in the server dir
 - Configure production environment variables
 - Point frontend to production API base URL
 - Validate end-to-end in production
