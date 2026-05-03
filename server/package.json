@@ -17,7 +17,8 @@
     "verify:start-dist": "tsx scripts/verify-start-dist.ts",
     "seed:demo": "tsx scripts/seed-demo-users.ts",
     "verify:auth-rbac": "tsx scripts/verify-auth-rbac.ts",
-    "verify:items": "tsx scripts/verify-items.ts"
+    "verify:items": "tsx scripts/verify-items.ts",
+    "verify:phase4-6": "tsx scripts/verify-phase4-6.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.itemRouter = void 0;
 const express_1 = require("express");
-const async_handler_1 = require("../middleware/async-handler");
-const optional_auth_1 = require("../middleware/optional-auth");
-const auth_1 = require("../middleware/auth");
 const item_controller_1 = require("../controllers/item.controller");
+const async_handler_1 = require("../middleware/async-handler");
+const auth_1 = require("../middleware/auth");
+const optional_auth_1 = require("../middleware/optional-auth");
 exports.itemRouter = (0, express_1.Router)();
 exports.itemRouter.get("/items", optional_auth_1.optionalAuth, (0, async_handler_1.asyncHandler)(item_controller_1.list));
 exports.itemRouter.get("/items/:id", (0, async_handler_1.asyncHandler)(item_controller_1.getById));

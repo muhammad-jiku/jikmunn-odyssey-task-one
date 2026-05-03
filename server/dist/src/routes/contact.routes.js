@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.contactRouter = void 0;
+const express_1 = require("express");
+const contact_controller_1 = require("../controllers/contact.controller");
+const async_handler_1 = require("../middleware/async-handler");
+const auth_1 = require("../middleware/auth");
+exports.contactRouter = (0, express_1.Router)();
+exports.contactRouter.post("/contact", (0, async_handler_1.asyncHandler)(contact_controller_1.create));
+exports.contactRouter.get("/contact", auth_1.requireAuth, (0, auth_1.requireRole)(["admin"]), (0, async_handler_1.asyncHandler)(contact_controller_1.list));

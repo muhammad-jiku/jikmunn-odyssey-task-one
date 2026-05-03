@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminRouter = void 0;
+const express_1 = require("express");
+const admin_controller_1 = require("../controllers/admin.controller");
+const async_handler_1 = require("../middleware/async-handler");
+const auth_1 = require("../middleware/auth");
+exports.adminRouter = (0, express_1.Router)();
+exports.adminRouter.use(auth_1.requireAuth, (0, auth_1.requireRole)(["admin"]));
+exports.adminRouter.get("/admin/overview", (0, async_handler_1.asyncHandler)(admin_controller_1.overview));
+exports.adminRouter.get("/admin/users", (0, async_handler_1.asyncHandler)(admin_controller_1.users));
+exports.adminRouter.patch("/admin/users/:id/role", (0, async_handler_1.asyncHandler)(admin_controller_1.updateUserRole));
+exports.adminRouter.get("/admin/items", (0, async_handler_1.asyncHandler)(admin_controller_1.items));
+exports.adminRouter.delete("/admin/items/:id", (0, async_handler_1.asyncHandler)(admin_controller_1.removeItem));
+exports.adminRouter.get("/admin/reports/charts", (0, async_handler_1.asyncHandler)(admin_controller_1.charts));

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Input } from "@/components/ui";
+import { apiSubmitContactMessage } from "@/lib/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Send, User } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -19,8 +20,6 @@ const contactSchema = z.object({
 
 type ContactValues = z.infer<typeof contactSchema>;
 
-const RECIPIENT = "muhammadjiku364@gmail.com";
-
 export function ContactForm() {
   const {
     register,
@@ -32,20 +31,14 @@ export function ContactForm() {
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
-  function onSubmit(values: ContactValues) {
-    const subject = encodeURIComponent(`[Odyssey] ${values.subject}`);
-    const body = encodeURIComponent(
-      `From: ${values.name} <${values.email}>\n\n${values.message}`,
-    );
-    // Open the user's mail client prefilled — works without a backend.
-    if (typeof window !== "undefined") {
-      window.open(
-        `mailto:${RECIPIENT}?subject=${subject}&body=${body}`,
-        "_self",
-      );
+  async function onSubmit(values: ContactValues) {
+    try {
+      await apiSubmitContactMessage(values);
+      toast.success("Message sent successfully.");
+      reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not send message");
     }
-    toast.success("Opening your email app to send this message…");
-    reset();
   }
 
   return (

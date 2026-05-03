@@ -7,7 +7,7 @@ This plan has been re-analyzed against the current codebase implementation (not 
 ## Commands executed for verification
 
 - frontend typecheck: pass
-- frontend build: pass (22 static/SSG routes generated)
+- frontend build: pass (34 static/SSG routes generated)
 - frontend lint: pass via eslint CLI
 - server lint: pass
 - server build: pass
@@ -15,6 +15,7 @@ This plan has been re-analyzed against the current codebase implementation (not 
 - server production boot verification: pass (`npm run verify:start-dist`)
 - server auth + RBAC verification: pass (`npm run verify:auth-rbac`)
 - server items API verification: pass (`npm run verify:items`)
+- server phase 4 + 6 verification: pass (`npm run verify:phase4-6`)
 
 ## Implementation findings confirmed in code
 
@@ -31,22 +32,22 @@ This plan has been re-analyzed against the current codebase implementation (not 
 - Demo user/admin seeding is implemented and verified.
 - Frontend authentication is now backend JWT based with token refresh and persisted session hydration.
 - Product data source for listing/details/manage/add is now backend `/api/items`.
-- Contact flow uses mailto client handoff, not database persistence.
-- Protected pages exist for add and manage items, but there is no role-based backend authorization.
-- No dashboard routes for user/admin role-separated analytics.
-- Required reusable primitives still missing as dedicated components: Modal, Table, Dropdown.
-- Required pages still missing: edit item, profile update, dashboard routes.
+- Contact flow persists to backend `/api/contact` and is queryable by admin.
+- Profile APIs are implemented for read/update/password/avatar (`/api/users/me*`).
+- Role-separated dashboard routes are implemented for user and admin surfaces.
+- Required reusable primitives are implemented as dedicated components: Modal, Table, Dropdown.
+- Admin overview, users, items, reports, and contact pages are wired to backend data.
 
 ## Compliance status by upgrade requirement area
 
 - Global UI/design rules: partial
 - Home/landing structure: partial (strong base, but section and dynamic-backend requirements still pending)
-- Core listing/cards: partial (UI complete, backend data source pending)
-- Details page: partial (public + related implemented, multi-image gallery from backend pending)
-- Listing/explore page: partial (UI features implemented, backend filtering pending)
+- Core listing/cards: complete
+- Details page: partial (public + related implemented, multi-image gallery validation still pending)
+- Listing/explore page: complete
 - Authentication system (JWT + RBAC): complete
-- Role-based dashboard: not started
-- Additional pages with DB-backed contact: partial
+- Role-based dashboard: complete
+- Additional pages with DB-backed contact: complete
 - Backend architecture/security: partial (phase 1 complete; auth/rbac/security hardening pending)
 - Performance optimization: partial
 - Code quality/deployment/final submission: partial
@@ -75,6 +76,31 @@ Reason:
 - Frontend item store now reads/writes backend `/api/items` endpoints instead of localStorage/static merge.
 - Add/manage/list/details flows consume backend item payloads.
 - Frontend typecheck/build and frontend ESLint checks passed after migration.
+
+## Phase 6 status verdict
+
+- Phase 6 (codebase implementation): complete
+- Phase 6 (verification against exit criteria): complete
+
+Reason:
+
+- Role-based dashboard shell and route guards are implemented for user/admin flows.
+- User/admin sidebars and dashboard pages are implemented with distinct navigation.
+- Admin overview and reporting charts consume real aggregate endpoints.
+- Admin tables (users/items/contact) are data-backed with filters and actions.
+- Frontend build/typecheck and backend `verify:phase4-6` both passed.
+
+## Phase 4 status verdict
+
+- Phase 4 (codebase implementation): complete
+- Phase 4 (verification against exit criteria): complete
+
+Reason:
+
+- Contact submissions are persisted to DB via `/api/contact` and listable for admins.
+- Profile update, password change, and avatar endpoints are implemented and validated.
+- Frontend profile page and contact form are connected to backend APIs.
+- Backend `verify:phase4-6` script passed end-to-end profile/contact scenarios.
 
 ## Phase 3 status verdict
 
@@ -114,8 +140,8 @@ Reason:
 
 ## Remaining phase count
 
-- If counting implementation phases only: 6 remaining (Phases 4, 6, 7, 8, 9, 10)
-- If counting full operational completion including non-code setup: 6 remaining (Phases 4, 6, 7, 8, 9, 10)
+- If counting implementation phases only: 4 remaining (Phases 7, 8, 9, 10)
+- If counting full operational completion including non-code setup: 4 remaining (Phases 7, 8, 9, 10)
 
 ## 1. Objective
 
@@ -360,15 +386,20 @@ Current completion:
 
 Tasks:
 
-- Persist contact form to DB with validation
-- Build profile read/update/password-change APIs
-- Implement avatar upload pipeline (Cloudinary/S3)
-- Add frontend pages/forms for profile update
+- [x] Persist contact form to DB with validation
+- [x] Build profile read/update/password-change APIs
+- [x] Implement avatar upload pipeline (Cloudinary/S3)
+- [x] Add frontend pages/forms for profile update
 
 Exit criteria:
 
-- Contact submissions are stored and reviewable
-- Profile update and password update both pass validation and persist
+- [x] Contact submissions are stored and reviewable
+- [x] Profile update and password update both pass validation and persist
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (4 of 4 core tasks done, 2 of 2 exit criteria passed)
 
 ## Phase 5 - Frontend Data Migration to API
 
@@ -393,17 +424,22 @@ Current completion:
 
 Tasks:
 
-- Build dashboard shell with role-specific sidebars
-- User sidebar with at least 4 menu items
-- Admin sidebar with at least 6 menu items
-- Overview cards using dynamic backend data
-- Add bar, line, and pie charts from real API aggregates
-- Build table screens with pagination/filtering/sorting/actions
+- [x] Build dashboard shell with role-specific sidebars
+- [x] User sidebar with at least 4 menu items
+- [x] Admin sidebar with at least 6 menu items
+- [x] Overview cards using dynamic backend data
+- [x] Add bar, line, and pie charts from real API aggregates
+- [x] Build table screens with pagination/filtering/sorting/actions
 
 Exit criteria:
 
-- User and admin dashboards are different, functional, and data-driven
-- Charts and tables are backed by real database data
+- [x] User and admin dashboards are different, functional, and data-driven
+- [x] Charts and tables are backed by real database data
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (6 of 6 core tasks done, 2 of 2 exit criteria passed)
 
 ## Phase 7 - Landing and Section Expansion
 

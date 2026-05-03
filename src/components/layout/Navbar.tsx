@@ -6,20 +6,21 @@ import { useCart } from "@/context/CartContext";
 import { useTheme } from "@/context/ThemeContext";
 import clsx from "clsx";
 import
-  {
-    ChevronDown,
-    LogIn,
-    LogOut,
-    Menu,
-    Moon,
-    PackagePlus,
-    Settings2,
-    ShoppingBag,
-    ShoppingCart,
-    Sun,
-    UserPlus,
-    X,
-  } from "lucide-react";
+    {
+        ChevronDown,
+        LayoutDashboard,
+        LogIn,
+        LogOut,
+        Menu,
+        Moon,
+        PackagePlus,
+        Settings2,
+        ShoppingBag,
+        ShoppingCart,
+        Sun,
+        UserPlus,
+        X,
+    } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -180,6 +181,20 @@ export function Navbar() {
                     </p>
                   </div>
                   <Link
+                    href={user.role === "admin" ? "/dashboard/admin/overview" : "/dashboard/overview"}
+                    role="menuitem"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-muted"
+                  >
+                    <LayoutDashboard className="h-4 w-4" /> Dashboard
+                  </Link>
+                  <Link
+                    href="/dashboard/profile"
+                    role="menuitem"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-muted"
+                  >
+                    <UserPlus className="h-4 w-4" /> Profile
+                  </Link>
+                  <Link
                     href="/items/add"
                     role="menuitem"
                     className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-muted"
@@ -308,6 +323,18 @@ export function Navbar() {
                     </p>
                   </div>
                 </div>
+                <Link
+                  href={user.role === "admin" ? "/dashboard/admin/overview" : "/dashboard/overview"}
+                  className="flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2.5 text-sm hover:bg-surface-muted"
+                >
+                  <LayoutDashboard className="h-4 w-4" /> Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/profile"
+                  className="flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2.5 text-sm hover:bg-surface-muted"
+                >
+                  <UserPlus className="h-4 w-4" /> Profile
+                </Link>
                 <Link
                   href="/items/add"
                   className="flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2.5 text-sm hover:bg-surface-muted"

@@ -2,12 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.apiRouter = void 0;
 const express_1 = require("express");
+const admin_routes_1 = require("./admin.routes");
 const auth_routes_1 = require("./auth.routes");
+const contact_routes_1 = require("./contact.routes");
 const health_routes_1 = require("./health.routes");
 const item_routes_1 = require("./item.routes");
 const rbac_routes_1 = require("./rbac.routes");
+const users_routes_1 = require("./users.routes");
 exports.apiRouter = (0, express_1.Router)();
 exports.apiRouter.use(health_routes_1.healthRouter);
 exports.apiRouter.use(auth_routes_1.authRouter);
 exports.apiRouter.use(item_routes_1.itemRouter);
+exports.apiRouter.use(contact_routes_1.contactRouter);
+exports.apiRouter.use(users_routes_1.usersRouter);
+exports.apiRouter.use(admin_routes_1.adminRouter);
 exports.apiRouter.use(rbac_routes_1.rbacRouter);

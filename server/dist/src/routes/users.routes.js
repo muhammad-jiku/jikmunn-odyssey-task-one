@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.usersRouter = void 0;
+const express_1 = require("express");
+const user_controller_1 = require("../controllers/user.controller");
+const async_handler_1 = require("../middleware/async-handler");
+const auth_1 = require("../middleware/auth");
+exports.usersRouter = (0, express_1.Router)();
+exports.usersRouter.get("/users/me", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(user_controller_1.me));
+exports.usersRouter.patch("/users/me", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(user_controller_1.updateProfile));
+exports.usersRouter.patch("/users/me/password", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(user_controller_1.updatePassword));
+exports.usersRouter.post("/users/me/avatar", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(user_controller_1.updateAvatar));

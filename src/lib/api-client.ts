@@ -318,3 +318,179 @@ export async function apiDeleteItem(id: string) {
     auth: true
   });
 }
+
+export async function apiSubmitContactMessage(input: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) {
+  return apiFetch<{ ok: true; message: string }>("/contact", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input)
+  });
+}
+
+export async function apiUpdateProfile(input: { name?: string; email?: string }) {
+  const data = await apiFetch<{ ok: true; user: AppUser; message: string }>("/users/me", {
+    method: "PATCH",
+    auth: true,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input)
+  });
+  return data.user;
+}
+
+export async function apiUpdatePassword(input: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  return apiFetch<{ ok: true; message: string }>("/users/me/password", {
+    method: "PATCH",
+    auth: true,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input)
+  });
+}
+
+export async function apiUpdateAvatar(avatarUrl: string) {
+  const data = await apiFetch<{ ok: true; user: AppUser; message: string }>("/users/me/avatar", {
+    method: "POST",
+    auth: true,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ avatarUrl })
+  });
+  return data.user;
+}
+
+export async function apiAdminOverview() {
+  const data = await apiFetch<{
+    ok: true;
+    stats: {
+      totalUsers: number;
+      totalItems: number;
+      totalActiveItems: number;
+      totalContactMessages: number;
+    };
+  }>("/admin/overview", { auth: true });
+  return data.stats;
+}
+
+export async function apiAdminUsers(params?: {
+  q?: string;
+  role?: "all" | "user" | "admin";
+  sort?: "newest" | "name" | "email" | "role";
+  page?: number;
+  pageSize?: number;
+}) {
+  const search = new URLSearchParams({
+    q: params?.q ?? "",
+    role: params?.role ?? "all",
+    sort: params?.sort ?? "newest",
+    page: String(params?.page ?? 1),
+    pageSize: String(params?.pageSize ?? 20)
+  });
+
+  return apiFetch<{
+    ok: true;
+    rows: AppUser[];
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  }>(`/admin/users?${search.toString()}`, { auth: true });
+}
+
+export async function apiAdminUpdateUserRole(userId: string, role: "user" | "admin") {
+  const data = await apiFetch<{ ok: true; user: AppUser; message: string }>(
+    `/admin/users/${userId}/role`,
+    {
+      method: "PATCH",
+      auth: true,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ role })
+    }
+  );
+  return data.user;
+}
+
+export async function apiAdminItems(params?: {
+  q?: string;
+  status?: "all" | "active" | "archived";
+  sort?: "newest" | "price-asc" | "price-desc" | "rating-desc";
+  page?: number;
+  pageSize?: number;
+}) {
+  const search = new URLSearchParams({
+    q: params?.q ?? "",
+    status: params?.status ?? "all",
+    sort: params?.sort ?? "newest",
+    page: String(params?.page ?? 1),
+    pageSize: String(params?.pageSize ?? 20)
+  });
+
+  return apiFetch<{
+    ok: true;
+    rows: Array<
+      Pick<Item, "id" | "title" | "price" | "category" | "rating" | "createdAt" | "ownerId"> & {
+        status: "active" | "archived";
+      }
+    >;
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  }>(`/admin/items?${search.toString()}`, { auth: true });
+}
+
+export async function apiAdminDeleteItem(itemId: string) {
+  return apiFetch<{ ok: true; message: string }>(`/admin/items/${itemId}`, {
+    method: "DELETE",
+    auth: true
+  });
+}
+
+export async function apiAdminCharts() {
+  const data = await apiFetch<{
+    ok: true;
+    data: {
+      itemsAndMessagesByMonth: Array<{ month: string; items: number; messages: number }>;
+      categoryDistribution: Array<{ label: string; value: number }>;
+      roleDistribution: Array<{ label: string; value: number }>;
+      messageStatusDistribution: Array<{ label: string; value: number }>;
+    };
+  }>("/admin/reports/charts", { auth: true });
+  return data.data;
+}
+
+export async function apiAdminContactMessages(params?: {
+  status?: "all" | "unread" | "read" | "resolved";
+  q?: string;
+  page?: number;
+  pageSize?: number;
+}) {
+  const search = new URLSearchParams({
+    status: params?.status ?? "all",
+    q: params?.q ?? "",
+    page: String(params?.page ?? 1),
+    pageSize: String(params?.pageSize ?? 20)
+  });
+
+  return apiFetch<{
+    ok: true;
+    messages: Array<{
+      id: string;
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+      status: "unread" | "read" | "resolved";
+      createdAt: string;
+    }>;
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  }>(`/contact?${search.toString()}`, { auth: true });
+}
