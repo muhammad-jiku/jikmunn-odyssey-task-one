@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 import { ApiError, HTTP } from "../utils/http";
 
 export function errorHandler(
@@ -12,6 +13,15 @@ export function errorHandler(
       ok: false,
       message: error.message,
       details: error.details ?? null
+    });
+    return;
+  }
+
+  if (error instanceof ZodError) {
+    res.status(HTTP.badRequest).json({
+      ok: false,
+      message: "Validation failed",
+      details: error.issues
     });
     return;
   }

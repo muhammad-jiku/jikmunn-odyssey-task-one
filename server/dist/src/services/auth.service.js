@@ -16,8 +16,8 @@ const env_1 = require("../config/env");
 const refresh_token_model_1 = require("../models/refresh-token.model");
 const user_model_1 = require("../models/user.model");
 const crypto_1 = require("../utils/crypto");
-const jwt_1 = require("../utils/jwt");
 const http_1 = require("../utils/http");
+const jwt_1 = require("../utils/jwt");
 const SALT_ROUNDS = 12;
 function toPublicUser(user) {
     return {

@@ -16,7 +16,8 @@
     "verify:health-db": "tsx scripts/verify-health-db.ts",
     "verify:start-dist": "tsx scripts/verify-start-dist.ts",
     "seed:demo": "tsx scripts/seed-demo-users.ts",
-    "verify:auth-rbac": "tsx scripts/verify-auth-rbac.ts"
+    "verify:auth-rbac": "tsx scripts/verify-auth-rbac.ts",
+    "verify:items": "tsx scripts/verify-items.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -6,9 +6,9 @@ exports.demoLogin = demoLogin;
 exports.refresh = refresh;
 exports.logout = logout;
 exports.me = me;
-const auth_validator_1 = require("../validators/auth.validator");
 const auth_service_1 = require("../services/auth.service");
 const http_1 = require("../utils/http");
+const auth_validator_1 = require("../validators/auth.validator");
 async function register(req, res) {
     const payload = auth_validator_1.registerSchema.parse(req.body);
     const auth = await (0, auth_service_1.registerUser)(payload.name, payload.email, payload.password);

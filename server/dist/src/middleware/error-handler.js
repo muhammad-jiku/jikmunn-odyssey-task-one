@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = errorHandler;
+const zod_1 = require("zod");
 const http_1 = require("../utils/http");
 function errorHandler(error, _req, res, _next) {
     if (error instanceof http_1.ApiError) {
@@ -8,6 +9,14 @@ function errorHandler(error, _req, res, _next) {
             ok: false,
             message: error.message,
             details: error.details ?? null
+        });
+        return;
+    }
+    if (error instanceof zod_1.ZodError) {
+        res.status(http_1.HTTP.badRequest).json({
+            ok: false,
+            message: "Validation failed",
+            details: error.issues
         });
         return;
     }

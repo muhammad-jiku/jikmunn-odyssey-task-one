@@ -15,6 +15,7 @@ export interface Item {
   category: ItemCategory;
   rating: number;
   imageUrl?: string;
+  images?: string[];
   createdAt: string;
   ownerId?: string;
 }

@@ -2,7 +2,6 @@
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Button, Container, Input, Section } from "@/components/ui";
-import { useAuth } from "@/context/AuthContext";
 import { ALL_CATEGORIES, CATEGORY_LABELS } from "@/lib/items-utils";
 import { addUserItem } from "@/lib/itemsStore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,7 +56,6 @@ type AddItemValues = z.infer<typeof addItemSchema>;
 
 function AddItemForm() {
   const router = useRouter();
-  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -80,7 +78,7 @@ function AddItemForm() {
   async function onSubmit(values: AddItemValues) {
     setSubmitting(true);
     try {
-      const created = addUserItem(
+      const created = await addUserItem(
         {
           title: values.title.trim(),
           shortDescription: values.shortDescription.trim(),
@@ -89,8 +87,7 @@ function AddItemForm() {
           category: values.category,
           rating: Number(values.rating),
           imageUrl: values.imageUrl?.trim() || undefined,
-        },
-        user?.uid,
+        }
       );
       toast.success(`“${created.title}” added`);
       router.push("/items/manage");
@@ -124,8 +121,8 @@ function AddItemForm() {
                 Add a new product
               </h1>
               <p className="mt-1 text-sm text-foreground/70">
-                Saved locally to your browser. You&apos;ll see it on the Shop
-                page right away.
+                Saved to your account and published to the Shop page right
+                away.
               </p>
             </div>
           </header>

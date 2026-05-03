@@ -13,15 +13,13 @@ type AccessTokenPayload = {
   exp: number;
 };
 
-declare global {
-  namespace Express {
-    interface Request {
-      auth?: {
-        userId: string;
-        role: UserRole;
-        email: string;
-      };
-    }
+declare module "express-serve-static-core" {
+  interface Request {
+    auth?: {
+      userId: string;
+      role: UserRole;
+      email: string;
+    };
   }
 }
 

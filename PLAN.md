@@ -14,6 +14,7 @@ This plan has been re-analyzed against the current codebase implementation (not 
 - server health DB verification: pass (`npm run verify:health-db`)
 - server production boot verification: pass (`npm run verify:start-dist`)
 - server auth + RBAC verification: pass (`npm run verify:auth-rbac`)
+- server items API verification: pass (`npm run verify:items`)
 
 ## Implementation findings confirmed in code
 
@@ -28,8 +29,8 @@ This plan has been re-analyzed against the current codebase implementation (not 
 - Password hashing is implemented with bcrypt.
 - Role-based middleware is implemented and verified (`requireAuth`, `requireRole`).
 - Demo user/admin seeding is implemented and verified.
-- Authentication is Firebase SDK based in client context, not custom backend JWT.
-- Product data source is static data plus localStorage store, not backend API.
+- Frontend authentication is now backend JWT based with token refresh and persisted session hydration.
+- Product data source for listing/details/manage/add is now backend `/api/items`.
 - Contact flow uses mailto client handoff, not database persistence.
 - Protected pages exist for add and manage items, but there is no role-based backend authorization.
 - No dashboard routes for user/admin role-separated analytics.
@@ -43,7 +44,7 @@ This plan has been re-analyzed against the current codebase implementation (not 
 - Core listing/cards: partial (UI complete, backend data source pending)
 - Details page: partial (public + related implemented, multi-image gallery from backend pending)
 - Listing/explore page: partial (UI features implemented, backend filtering pending)
-- Authentication system (JWT + RBAC): partial (backend complete in phase 2; frontend integration pending)
+- Authentication system (JWT + RBAC): complete
 - Role-based dashboard: not started
 - Additional pages with DB-backed contact: partial
 - Backend architecture/security: partial (phase 1 complete; auth/rbac/security hardening pending)
@@ -62,6 +63,30 @@ Reason:
 - Role middleware implemented and enforced on protected routes.
 - Demo admin/user accounts seeded and used by demo-login endpoint.
 - Exit criteria validated through end-to-end auth+RBAC verification script and server checks.
+
+## Phase 5 status verdict
+
+- Phase 5 (codebase implementation): complete
+- Phase 5 (verification against exit criteria): complete
+
+Reason:
+
+- Frontend auth context now uses backend JWT endpoints with refresh-token retry and logout cleanup.
+- Frontend item store now reads/writes backend `/api/items` endpoints instead of localStorage/static merge.
+- Add/manage/list/details flows consume backend item payloads.
+- Frontend typecheck/build and frontend ESLint checks passed after migration.
+
+## Phase 3 status verdict
+
+- Phase 3 (codebase implementation): complete
+- Phase 3 (verification against exit criteria): complete
+
+Reason:
+
+- Item schema, validators, service, controller, and routes are implemented and wired in API router.
+- Query features (search, filtering, sorting, pagination) are implemented on `/api/items`.
+- Owner/admin authorization checks are enforced for update/delete.
+- Item verification suite passes CRUD/query/ownership/admin scenarios (`npm run verify:items`).
 
 ## Phase 1 status verdict
 
@@ -89,8 +114,8 @@ Reason:
 
 ## Remaining phase count
 
-- If counting implementation phases only: 8 remaining (Phase 3 through Phase 10)
-- If counting full operational completion including non-code setup: 8 remaining (Phase 3 through Phase 10)
+- If counting implementation phases only: 6 remaining (Phases 4, 6, 7, 8, 9, 10)
+- If counting full operational completion including non-code setup: 6 remaining (Phases 4, 6, 7, 8, 9, 10)
 
 ## 1. Objective
 
@@ -316,15 +341,20 @@ Current completion:
 
 Tasks:
 
-- Build Item schema and CRUD endpoints
-- Add backend search, filters, sorting, pagination
-- Add ownership checks for edit/delete
-- Add image array support (minimum 2 images per item)
+- [x] Build Item schema and CRUD endpoints
+- [x] Add backend search, filters, sorting, pagination
+- [x] Add ownership checks for edit/delete
+- [x] Add image array support (minimum 2 images per item)
 
 Exit criteria:
 
-- /api/items fully powers listing and details pages
-- No hardcoded listing data used in production path
+- [x] /api/items fully powers listing and details pages
+- [x] No hardcoded listing data used in production path
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (4 of 4 core tasks done, 2 of 2 exit criteria passed)
 
 ## Phase 4 - Contact, Profile, and Uploads
 
@@ -344,15 +374,20 @@ Exit criteria:
 
 Tasks:
 
-- Replace localStorage item source with API client
-- Keep optimistic UX where needed but source of truth is backend
-- Wire auth state to JWT lifecycle and refresh handling
-- Preserve existing polished UI while switching data source
+- [x] Replace localStorage item source with API client
+- [x] Keep optimistic UX where needed but source of truth is backend
+- [x] Wire auth state to JWT lifecycle and refresh handling
+- [x] Preserve existing polished UI while switching data source
 
 Exit criteria:
 
-- Explore/listing/details/create/edit/manage all backend-driven
-- No localhost URLs hardcoded in production build
+- [x] Explore/listing/details/create/edit/manage all backend-driven
+- [x] No localhost URLs hardcoded in production build
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (4 of 4 core tasks done, 2 of 2 exit criteria passed)
 
 ## Phase 6 - Role-Based Dashboards (User and Admin)
 

@@ -14,7 +14,7 @@ function ManageItemsView() {
   const items = useUserItems();
   const [pendingId, setPendingId] = useState<string | null>(null);
 
-  function handleDelete(id: string, title: string) {
+  async function handleDelete(id: string, title: string) {
     if (
       typeof window !== "undefined" &&
       !window.confirm(`Delete “${title}”? This can't be undone.`)
@@ -23,7 +23,7 @@ function ManageItemsView() {
     }
     setPendingId(id);
     try {
-      const ok = deleteUserItem(id);
+      const ok = await deleteUserItem(id);
       if (ok) toast.success("Product deleted");
       else toast.error("Could not find that product");
     } finally {
@@ -47,7 +47,7 @@ function ManageItemsView() {
                 ? "You haven't added any products yet."
                 : `You have ${items.length} product${
                     items.length === 1 ? "" : "s"
-                  } saved locally.`}
+                  } in your account.`}
             </p>
           </div>
           <Link href="/items/add">

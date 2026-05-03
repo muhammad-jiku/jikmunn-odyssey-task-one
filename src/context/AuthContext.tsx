@@ -1,17 +1,16 @@
 "use client";
 
-import { firebaseEnabled, getFirebaseAuth, googleProvider } from "@/lib/firebase";
 import
     {
-        GoogleAuthProvider,
-        createUserWithEmailAndPassword,
-        onAuthStateChanged,
-        signInWithEmailAndPassword,
-        signInWithPopup,
-        signOut,
-        updateProfile,
-        type User,
-    } from "firebase/auth";
+        ApiClientError,
+        apiDemoLogin,
+        apiHydrateSession,
+        apiLogin,
+        apiLogout,
+        apiRegister,
+        subscribeAuth,
+    } from "@/lib/api-client";
+import type { AppUser } from "@/types/auth";
 import
     {
         createContext,
@@ -23,8 +22,13 @@ import
         type ReactNode,
     } from "react";
 
+export interface AuthUser extends AppUser {
+  uid: string;
+  displayName: string | null;
+}
+
 interface AuthContextValue {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   firebaseEnabled: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -39,76 +43,94 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function ensureAuth() {
-  const auth = getFirebaseAuth();
-  if (!auth) {
-    throw new Error(
-      "Firebase is not configured. Set NEXT_PUBLIC_FIREBASE_* env vars.",
-    );
-  }
-  return auth;
+function mapUser(user: AppUser): AuthUser {
+  return {
+    ...user,
+    uid: user.id,
+    displayName: user.name || user.email?.split("@")[0] || null,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   useEffect(() => {
-    const auth = getFirebaseAuth();
-    if (!auth) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLoading(false);
-      return;
-    }
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
+    let active = true;
+
+    void (async () => {
+      try {
+        const me = await apiHydrateSession();
+        if (active) setBackendAvailable(true);
+        if (active) setUser(me ? mapUser(me) : null);
+      } catch (error) {
+        if (active && !(error instanceof ApiClientError)) {
+          setBackendAvailable(false);
+          setUser(null);
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+
+    const unsubscribe = subscribeAuth(() => {
+      void (async () => {
+        try {
+          const me = await apiHydrateSession();
+          if (active) {
+            setBackendAvailable(true);
+            setUser(me ? mapUser(me) : null);
+          }
+        } catch (error) {
+          if (active && !(error instanceof ApiClientError)) {
+            setBackendAvailable(false);
+            setUser(null);
+          }
+        }
+      })();
     });
-    return () => unsubscribe();
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    await signInWithEmailAndPassword(ensureAuth(), email, password);
+    const me = await apiLogin(email, password);
+    setUser(mapUser(me));
   }, []);
 
   const register = useCallback(
     async (email: string, password: string, displayName?: string) => {
-      const cred = await createUserWithEmailAndPassword(
-        ensureAuth(),
-        email,
-        password,
-      );
-      if (displayName && cred.user) {
-        await updateProfile(cred.user, { displayName });
-        setUser({ ...cred.user });
-      }
+      const me = await apiRegister(displayName?.trim() || "User", email, password);
+      setUser(mapUser(me));
     },
     [],
   );
 
   const loginWithGoogle = useCallback(async () => {
-    const provider =
-      googleProvider instanceof GoogleAuthProvider
-        ? googleProvider
-        : new GoogleAuthProvider();
-    await signInWithPopup(ensureAuth(), provider);
+    const me = await apiDemoLogin("user");
+    setUser(mapUser(me));
   }, []);
 
   const logout = useCallback(async () => {
-    await signOut(ensureAuth());
+    await apiLogout();
+    setUser(null);
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       loading,
-      firebaseEnabled,
+      firebaseEnabled: backendAvailable,
       login,
       register,
       loginWithGoogle,
       logout,
     }),
-    [user, loading, login, register, loginWithGoogle, logout],
+    [user, loading, backendAvailable, login, register, loginWithGoogle, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

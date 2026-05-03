@@ -63,23 +63,12 @@ function LoginPageInner() {
       router.refresh();
     } catch (err) {
       const raw = err instanceof Error ? err.message : "";
-      const code =
-        // Firebase errors look like: "Firebase: Error (auth/invalid-credential)."
-        raw.match(/auth\/[a-z-]+/)?.[0] ?? "";
-      const invalid = new Set([
-        "auth/invalid-credential",
-        "auth/wrong-password",
-        "auth/user-not-found",
-        "auth/invalid-email",
-      ]);
-      if (invalid.has(code)) {
+      if (/invalid credentials/i.test(raw)) {
         toast.error("Invalid credentials");
-      } else if (code === "auth/too-many-requests") {
+      } else if (/too many/i.test(raw)) {
         toast.error("Too many attempts. Try again later.");
       } else {
-        toast.error(
-          raw ? raw.replace("Firebase: ", "") : "Could not sign you in.",
-        );
+        toast.error(raw || "Could not sign you in.");
       }
     } finally {
       setSubmitting(false);
@@ -96,7 +85,7 @@ function LoginPageInner() {
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Google sign-in failed.";
-      toast.error(msg.replace("Firebase: ", ""));
+      toast.error(msg);
     } finally {
       setGoogleLoading(false);
     }
@@ -123,9 +112,9 @@ function LoginPageInner() {
 
             {!firebaseEnabled && (
               <div className="mb-5 rounded-[var(--radius-md)] border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
-                Firebase keys are not set in <code>.env.local</code>. Add the
-                <code className="mx-1">NEXT_PUBLIC_FIREBASE_*</code>variables to
-                enable authentication.
+                Backend authentication is not reachable. Set
+                <code className="mx-1">NEXT_PUBLIC_API_BASE_URL</code>to your
+                API server URL.
               </div>
             )}
 
@@ -178,7 +167,7 @@ function LoginPageInner() {
               disabled={busy || googleLoading}
               leftIcon={<GoogleIcon className="h-4 w-4" />}
             >
-              Continue with Google
+              Continue with Demo User
             </Button>
 
             <p className="mt-6 text-center text-sm text-foreground/70">

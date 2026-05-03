@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.itemRouter = void 0;
+const express_1 = require("express");
+const async_handler_1 = require("../middleware/async-handler");
+const optional_auth_1 = require("../middleware/optional-auth");
+const auth_1 = require("../middleware/auth");
+const item_controller_1 = require("../controllers/item.controller");
+exports.itemRouter = (0, express_1.Router)();
+exports.itemRouter.get("/items", optional_auth_1.optionalAuth, (0, async_handler_1.asyncHandler)(item_controller_1.list));
+exports.itemRouter.get("/items/:id", (0, async_handler_1.asyncHandler)(item_controller_1.getById));
+exports.itemRouter.post("/items", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(item_controller_1.create));
+exports.itemRouter.patch("/items/:id", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(item_controller_1.update));
+exports.itemRouter.delete("/items/:id", auth_1.requireAuth, (0, async_handler_1.asyncHandler)(item_controller_1.remove));

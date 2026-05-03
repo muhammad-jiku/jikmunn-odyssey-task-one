@@ -1,150 +1,100 @@
 "use client";
 
-import { staticItems } from "@/data/items";
+import { apiCreateItem, apiDeleteItem, apiGetItemById, apiListItems, apiListMyItems } from "@/lib/api-client";
 import type { Item } from "@/types/item";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "jikmunn-odyssey:user-items:v1";
 const CHANGE_EVENT = "jikmunn-odyssey:user-items:change";
 
 function isBrowser() {
   return typeof window !== "undefined";
 }
 
-function readUserItems(): Item[] {
-  if (!isBrowser()) return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as Item[];
-  } catch {
-    return [];
-  }
-}
-
-function writeUserItems(items: Item[]) {
+function notifyItemsChanged() {
   if (!isBrowser()) return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
-export function getUserItems(): Item[] {
-  return readUserItems();
+function subscribe(cb: () => void) {
+  if (!isBrowser()) return () => {};
+  window.addEventListener(CHANGE_EVENT, cb);
+  return () => window.removeEventListener(CHANGE_EVENT, cb);
 }
 
-export function getAllItems(): Item[] {
-  return [...readUserItems(), ...staticItems];
+export async function getUserItems(): Promise<Item[]> {
+  return apiListMyItems();
 }
 
-export function findItemById(id: string): Item | undefined {
-  return getAllItems().find((i) => i.id === id);
+export async function getAllItems(): Promise<Item[]> {
+  return apiListItems();
 }
 
-export type NewItemInput = Omit<Item, "id" | "createdAt"> & {
-  id?: string;
-  createdAt?: string;
-};
+export async function findItemById(id: string): Promise<Item | undefined> {
+  try {
+    return await apiGetItemById(id);
+  } catch {
+    return undefined;
+  }
+}
 
-export function addUserItem(input: NewItemInput, ownerId?: string): Item {
-  const now = new Date().toISOString();
-  const id =
-    input.id ??
-    (isBrowser() && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `user-${Date.now().toString(36)}`);
-  const item: Item = {
-    id,
+export type NewItemInput = Omit<Item, "id" | "createdAt" | "ownerId">;
+
+export async function addUserItem(input: NewItemInput): Promise<Item> {
+  const item = await apiCreateItem({
     title: input.title,
     shortDescription: input.shortDescription,
     fullDescription: input.fullDescription,
     price: input.price,
     category: input.category,
     rating: input.rating,
-    imageUrl: input.imageUrl || undefined,
-    createdAt: input.createdAt ?? now,
-    ownerId: ownerId ?? input.ownerId,
-  };
-  const next = [item, ...readUserItems()];
-  writeUserItems(next);
+    imageUrl: input.imageUrl,
+  });
+  notifyItemsChanged();
   return item;
 }
 
-export function deleteUserItem(id: string): boolean {
-  const current = readUserItems();
-  const next = current.filter((i) => i.id !== id);
-  if (next.length === current.length) return false;
-  writeUserItems(next);
-  return true;
-}
-
-export function isUserItem(id: string): boolean {
-  return readUserItems().some((i) => i.id === id);
-}
-
-function subscribe(cb: () => void) {
-  if (!isBrowser()) return () => {};
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === STORAGE_KEY) cb();
-  };
-  window.addEventListener(CHANGE_EVENT, cb);
-  window.addEventListener("storage", onStorage);
-  return () => {
-    window.removeEventListener(CHANGE_EVENT, cb);
-    window.removeEventListener("storage", onStorage);
-  };
-}
-
-// Cached snapshots so useSyncExternalStore only sees a new reference
-// when the underlying data actually changes. Returning a fresh array
-// from getSnapshot causes "Maximum update depth exceeded" infinite loops.
-const EMPTY_ITEMS: Item[] = [];
-let cachedRaw: string | null | undefined = undefined;
-let cachedUserSnapshot: Item[] = EMPTY_ITEMS;
-let cachedAllSnapshot: Item[] = staticItems;
-
-function getUserSnapshot(): Item[] {
-  if (!isBrowser()) return EMPTY_ITEMS;
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (raw === cachedRaw) return cachedUserSnapshot;
-  cachedRaw = raw;
-  let next: Item[] = EMPTY_ITEMS;
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) next = parsed as Item[];
-    } catch {
-      next = EMPTY_ITEMS;
-    }
+export async function deleteUserItem(id: string): Promise<boolean> {
+  try {
+    await apiDeleteItem(id);
+    notifyItemsChanged();
+    return true;
+  } catch {
+    return false;
   }
-  cachedUserSnapshot = next;
-  cachedAllSnapshot =
-    next.length === 0 ? staticItems : [...next, ...staticItems];
-  return cachedUserSnapshot;
 }
 
-function getAllSnapshot(): Item[] {
-  if (!isBrowser()) return staticItems;
-  // Ensure the user snapshot cache is fresh, then return the cached merge.
-  getUserSnapshot();
-  return cachedAllSnapshot;
-}
-
-function getServerUserSnapshot(): Item[] {
-  return EMPTY_ITEMS;
-}
-
-function getServerAllSnapshot(): Item[] {
-  return staticItems;
+export async function isUserItem(id: string): Promise<boolean> {
+  const items = await apiListMyItems();
+  return items.some((item) => item.id === id);
 }
 
 export function useUserItems(): Item[] {
-  return useSyncExternalStore(
-    subscribe,
-    getUserSnapshot,
-    getServerUserSnapshot,
-  );
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        const next = await apiListMyItems();
+        if (active) setItems(next);
+      } catch {
+        if (active) setItems([]);
+      }
+    };
+
+    void load();
+    const unsubscribe = subscribe(() => {
+      void load();
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, []);
+
+  return items;
 }
 
 /**
@@ -153,5 +103,30 @@ export function useUserItems(): Item[] {
  * matches; user items merge in after the first store change.
  */
 export function useAllItems(): Item[] {
-  return useSyncExternalStore(subscribe, getAllSnapshot, getServerAllSnapshot);
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        const next = await apiListItems();
+        if (active) setItems(next);
+      } catch {
+        if (active) setItems([]);
+      }
+    };
+
+    void load();
+    const unsubscribe = subscribe(() => {
+      void load();
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, []);
+
+  return items;
 }

@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = requireAuth;
 exports.requireRole = requireRole;
 const env_1 = require("../config/env");
-const jwt_1 = require("../utils/jwt");
 const http_1 = require("../utils/http");
+const jwt_1 = require("../utils/jwt");
 function getBearerToken(req) {
     const auth = req.header("authorization") || req.header("Authorization");
     if (!auth) {
