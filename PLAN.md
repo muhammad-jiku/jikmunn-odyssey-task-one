@@ -1,221 +1,463 @@
-# Odyssey Next.js Assessment — Task Breakdown & Phased Plan
+# Odyssey Project 1 Upgrade - Master Plan
 
-## Current Codebase Status
+## 0. Re-Verification Snapshot (May 03, 2026)
 
-After Phase 6 implementation:
+This plan has been re-analyzed against the current codebase implementation (not only file existence) by checking source behavior and running verification commands.
 
-**Phase 0 verified (still passing):**
-- ✅ Next.js 16 (App Router) + TypeScript scaffolded
-- ✅ Tailwind CSS v4 + design tokens (brand palette, surfaces, radius, shadows, focus-visible ring) in [src/app/globals.css](jikmunn-odyssey-task-one/src/app/globals.css)
-- ✅ Folder structure: `src/app/`, `src/components/`, `src/components/ui/`, `src/components/layout/`, `src/context/`, `src/lib/`, `src/data/`, `src/types/`
-- ✅ Static seed data, `Item` type, Firebase wiring, `.env.example`/`.env.local`
+## Commands executed for verification
 
-**Phase 1 verified present & working:**
-- ✅ Reusable UI primitives in [src/components/ui/](jikmunn-odyssey-task-one/src/components/ui):
-  - [Button.tsx](jikmunn-odyssey-task-one/src/components/ui/Button.tsx) — 5 variants (primary/secondary/ghost/danger/outline), 3 sizes, loading state, leftIcon/rightIcon, fullWidth, forwardRef
-  - [Input.tsx](jikmunn-odyssey-task-one/src/components/ui/Input.tsx) — label, hint, error, leftIcon, rightAddon, a11y `aria-invalid`/`aria-describedby`
-  - [Card.tsx](jikmunn-odyssey-task-one/src/components/ui/Card.tsx) — `Card`, `CardBody`, `CardHeader`, `CardFooter` with hover-elevation
-  - [Badge.tsx](jikmunn-odyssey-task-one/src/components/ui/Badge.tsx) — 5 tones (neutral/brand/success/warning/danger)
-  - [Container.tsx](jikmunn-odyssey-task-one/src/components/ui/Container.tsx) — max-w-7xl responsive container
-  - [Section.tsx](jikmunn-odyssey-task-one/src/components/ui/Section.tsx) — eyebrow/title/description, 3 background tones, optional `bleed`
-  - [Spinner.tsx](jikmunn-odyssey-task-one/src/components/ui/Spinner.tsx) — 3 sizes, accessible `role="status"`
-  - [index.ts](jikmunn-odyssey-task-one/src/components/ui/index.ts) — barrel export
-- ✅ Layout components in [src/components/layout/](jikmunn-odyssey-task-one/src/components/layout):
-  - [Navbar.tsx](jikmunn-odyssey-task-one/src/components/layout/Navbar.tsx) — sticky, backdrop-blur, logo, **4 routes** (Home, Shop, About, Contact), active-link styling, login/register buttons (logged-out), full user dropdown with Add Product / Manage Products / Logout (logged-in), mobile hamburger sheet, click-outside dismiss, route-change auto-close
-  - [Footer.tsx](jikmunn-odyssey-task-one/src/components/layout/Footer.tsx) — 4-column responsive grid, brand block, Explore/Account link columns, social icons (inline GitHub/Twitter/Instagram SVGs), © year, build credit
-  - [nav-links.ts](jikmunn-odyssey-task-one/src/components/layout/nav-links.ts) — shared nav config
-- ✅ [AuthContext](jikmunn-odyssey-task-one/src/context/AuthContext.tsx) — full implementation: `user`, `loading`, `firebaseEnabled`, `login`, `register`, `loginWithGoogle`, `logout`; uses `onAuthStateChanged` and gracefully no-ops when Firebase env keys are missing (build-safe)
-- ✅ [Providers.tsx](jikmunn-odyssey-task-one/src/components/Providers.tsx) — wraps `AuthProvider` + `react-hot-toast` `<Toaster />` with themed styling
-- ✅ [Firebase lazy init](jikmunn-odyssey-task-one/src/lib/firebase.ts) refactored to `getFirebaseApp()` / `getFirebaseAuth()` singletons + `firebaseEnabled` flag — no longer crashes prerender when env is empty
-- ✅ [layout.tsx](jikmunn-odyssey-task-one/src/app/layout.tsx) — wraps `<Providers>` → `<Navbar />` → `<main>{children}</main>` → `<Footer />` so every page (including 404) inherits the shell
-- ✅ `npm run lint` — clean (0 errors, 0 warnings)
-- ✅ `npx tsc --noEmit` — clean
-- ✅ `npm run build` — production build passes; `/` and `/_not-found` prerender successfully
+- frontend typecheck: pass
+- frontend build: pass (22 static/SSG routes generated)
+- frontend lint: pass via eslint CLI
+- server lint: pass
+- server build: pass
+- server health DB verification: pass (`npm run verify:health-db`)
+- server production boot verification: pass (`npm run verify:start-dist`)
+- server auth + RBAC verification: pass (`npm run verify:auth-rbac`)
 
-**Phase 2 verified present & working:**
-- ✅ Items helpers in [src/lib/items-utils.ts](jikmunn-odyssey-task-one/src/lib/items-utils.ts) — `CATEGORY_LABELS`, `ALL_CATEGORIES`, `formatPrice` (Intl USD), `formatDate` (Intl en-US short)
-- ✅ [ItemCard.tsx](jikmunn-odyssey-task-one/src/components/items/ItemCard.tsx) — article card with `next/image` (4:3 aspect, inline SVG placeholder fallback), category Badge, amber rating star, line-clamped description, formatted price, hover-lift + image-zoom, `View Details` button → `/items/${id}`
-- ✅ [ItemsBrowser.tsx](jikmunn-odyssey-task-one/src/components/items/ItemsBrowser.tsx) — client component with **search by name/desc**, **category filter** (All + 6 categories), **max-price range slider**, sort (featured / price asc/desc / top-rated), active-filter chips, result count, `Clear` button, empty state with `Reset filters` CTA, responsive grid (1 → 2 → 3 → 4 cols)
-- ✅ [src/app/page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — Full **landing page** (7 sections incl. layout): Navbar (layout) + Hero (gradient eyebrow, headline, dual CTAs, image with floating rating card, stats row) + Features (4-card grid) + Featured Items preview (4 ItemCards, "View all" link) + Testimonials (3 quote cards) + CTA banner (brand-gradient, dual buttons) + Footer (layout)
-- ✅ [src/app/items/page.tsx](jikmunn-odyssey-task-one/src/app/items/page.tsx) — `/items` server page with metadata + header + `<ItemsBrowser items={staticItems} />`
-- ✅ [src/app/items/\[id\]/page.tsx](jikmunn-odyssey-task-one/src/app/items/[id]/page.tsx) — `/items/[id]` dynamic route with `generateStaticParams` + `generateMetadata`, async `params`, `notFound()` on miss, 2-col layout (image / info), category Badge + rating + price + full description + 3-stat info grid (category/rating/added-date), Add-to-cart + Continue-shopping buttons, Back link, **Related products** section (same category, up to 4)
-- ✅ [src/app/about/page.tsx](jikmunn-odyssey-task-one/src/app/about/page.tsx) — About page: hero (story + image + dual CTA) + 4-card values section + create-account CTA card
-- ✅ [src/app/contact/page.tsx](jikmunn-odyssey-task-one/src/app/contact/page.tsx) — Contact page: centered hero + 4 contact channels (email/phone/chat/visit) + FAQ list
-- ✅ All 6 static items prerender as SSG: `/items/static-1` … `/items/static-6`
+## Implementation findings confirmed in code
 
-**Phase 3 verified present & working:**
-- ✅ [src/app/login/page.tsx](jikmunn-odyssey-task-one/src/app/login/page.tsx) — `/login` page: `Suspense`-wrapped client component (so `useSearchParams` doesn't break SSG), `react-hook-form` + `zod` validation (email + min-6 password), email/password inputs with `Mail`/`Lock` left icons + inline error messages, submit button with `isLoading` state, divider, **Continue with Google** button (inline brand SVG), `?redirect=` support, link to `/register`, friendly amber banner when `firebaseEnabled === false`, `react-hot-toast` success/error toasts, `router.push(redirect)` + `router.refresh()` on success
-- ✅ [src/app/register/page.tsx](jikmunn-odyssey-task-one/src/app/register/page.tsx) — `/register` page: `react-hook-form` + `zod` schema with `name` (2–60 chars), `email`, `password` (min 6), `confirmPassword` + `.refine()` cross-field match check, 4 inputs with icons + per-field error messages, submit calls `register(email, password, name)` (sets `displayName` via `updateProfile`), Google OAuth button, friendly Firebase-disabled banner, link to `/login`, redirects to `/` on success
-- ✅ Both pages share consistent card layout (max-w-md, surface bg, brand-accented icon header, divider before Google CTA) and disable both buttons while either submission is in flight
-- ✅ [src/context/AuthContext.tsx](jikmunn-odyssey-task-one/src/context/AuthContext.tsx) wired end-to-end via `useAuth()`: `login`, `register` (with displayName via `updateProfile`), `loginWithGoogle` (`signInWithPopup` + `GoogleAuthProvider`), `logout`, `firebaseEnabled` flag — Firebase env-empty path is graceful (forms throw a friendly error captured by toast)
-- ✅ [Navbar](jikmunn-odyssey-task-one/src/components/layout/Navbar.tsx) already reflects auth state: shows `Login`/`Register` buttons when logged-out, user dropdown (avatar initials, name, email, **Add Product**, **Manage Products**, **Logout**) when logged-in — verified working with the new pages
-- ✅ `npm run lint` — clean (0 errors, 0 warnings)
-- ✅ `npx tsc --noEmit` — clean
-- ✅ `npm run build` — production build passes; **15 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/login`, `/register`, `/_not-found`)
+- Frontend stack is fully implemented and running on Next.js + TypeScript + Tailwind.
+- Backend Phase 1 stack is implemented in `server/` with Express + Mongoose + TypeScript.
+- Backend modular folders exist and are wired: config, middleware, controllers, routes, services, utils, validators, scripts.
+- Health endpoint exists at `/api/health` and reports DB connectivity.
+- Centralized error handling and status helpers are implemented.
+- Backend lint/format/build/dev/start scripts are implemented.
+- JWT auth endpoints implemented: register, login, demo-login, refresh, logout, me.
+- Refresh-token rotation and revocation are implemented with DB-backed token hashes.
+- Password hashing is implemented with bcrypt.
+- Role-based middleware is implemented and verified (`requireAuth`, `requireRole`).
+- Demo user/admin seeding is implemented and verified.
+- Authentication is Firebase SDK based in client context, not custom backend JWT.
+- Product data source is static data plus localStorage store, not backend API.
+- Contact flow uses mailto client handoff, not database persistence.
+- Protected pages exist for add and manage items, but there is no role-based backend authorization.
+- No dashboard routes for user/admin role-separated analytics.
+- Required reusable primitives still missing as dedicated components: Modal, Table, Dropdown.
+- Required pages still missing: edit item, profile update, dashboard routes.
 
-**Phase 4 verified present & working:**
-- ✅ [src/lib/itemsStore.ts](jikmunn-odyssey-task-one/src/lib/itemsStore.ts) — localStorage-backed user-items store: `getUserItems`, `getAllItems` (merge `[...userItems, ...staticItems]`), `findItemById`, `addUserItem` (auto-generates id via `crypto.randomUUID()`, stamps `createdAt`, attaches `ownerId`), `deleteUserItem`, `isUserItem`; `useUserItems` and `useAllItems` React hooks built on `useSyncExternalStore` with cross-tab sync via `storage` event + same-tab sync via custom `odyssey:user-items:change` event; SSR-safe (server snapshot returns `[]`)
-- ✅ [src/components/auth/ProtectedRoute.tsx](jikmunn-odyssey-task-one/src/components/auth/ProtectedRoute.tsx) — client guard: shows centered `Spinner` + status message while `loading`, redirects unauthenticated users to `/login?redirect=<currentPath>` via `router.replace`, gracefully reports when Firebase isn't configured
-- ✅ [src/components/items/AllItemsBrowser.tsx](jikmunn-odyssey-task-one/src/components/items/AllItemsBrowser.tsx) — thin client wrapper that calls `useAllItems()` and renders `<ItemsBrowser items={...} />` so the Shop page sees user-added items live
-- ✅ [src/components/items/UserItemDetailsClient.tsx](jikmunn-odyssey-task-one/src/components/items/UserItemDetailsClient.tsx) — client fallback for `/items/[id]`: looks up via `useAllItems()`, renders the same details layout as the static SSG page (image / title / rating / price / full description / 3-stat info grid / Add-to-cart + Continue-shopping / Related products) when found, or a friendly “Product not found” card with `Back to all products` CTA when missing
-- ✅ [src/app/items/page.tsx](jikmunn-odyssey-task-one/src/app/items/page.tsx) — updated to render `<AllItemsBrowser />` (was `<ItemsBrowser items={staticItems} />`), so user-added products appear on Shop alongside the curated catalog
-- ✅ [src/app/items/\[id\]/page.tsx](jikmunn-odyssey-task-one/src/app/items/[id]/page.tsx) — server route now delegates to `<UserItemDetailsClient id={id} />` when `staticItems.find(...)` misses (instead of `notFound()`), preserving SSG for known static items while still serving user items at the same URL
-- ✅ [src/app/items/add/page.tsx](jikmunn-odyssey-task-one/src/app/items/add/page.tsx) — protected `/items/add`: `react-hook-form` + `zod` schema (`title` 3–80, `shortDescription` 10–160, `fullDescription` 20–2000, `price` 0–100000 via `valueAsNumber`, `category` enum of all 6 categories, `rating` 0–5, optional `imageUrl` validated as `https?://`), 7 fields incl. `<textarea>` for full description and `<select>` for category, brand-accented header with `PackagePlus` icon, Save + Cancel buttons, success toast + redirect to `/items/manage`
-- ✅ [src/app/items/manage/page.tsx](jikmunn-odyssey-task-one/src/app/items/manage/page.tsx) — protected `/items/manage`: live list via `useUserItems()`; **desktop table** (Product image+title+desc, Category badge, Price, Added date, View + Delete actions); **mobile stacked cards** with same data; per-row `Delete` triggers `window.confirm()` then `deleteUserItem`, success toast; rich empty state (icon, copy, primary CTA to `/items/add`); page header with count + `Add product` button
-- ✅ Both protected routes wrapped in `<ProtectedRoute>` — unauthenticated visitors get redirected to `/login?redirect=...`
-- ✅ Existing Navbar dropdown (`Add Product`, `Manage Products`) already linked to these routes — verified end-to-end
-- ✅ `npm run lint` — clean (0 errors, 0 warnings)
-- ✅ `npx tsc --noEmit` — clean
-- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`, `/_not-found`)
+## Compliance status by upgrade requirement area
 
-**Phase 5 verified present & working:**
-- ✅ [src/app/globals.css](jikmunn-odyssey-task-one/src/app/globals.css) — added micro-animation system: `@keyframes odyssey-fade-in`, `odyssey-fade-in-up`, `odyssey-shimmer`; utility classes `.animate-fade-in`, `.animate-fade-in-up` with cubic-easing; staggered delay utilities (`.animation-delay-100/200/300`); brand-tinted `::selection` (light + dark); `html { scroll-behavior: smooth }`; **`@media (prefers-reduced-motion: reduce)`** override that neutralizes animations + transitions for accessibility
-- ✅ [src/components/ui/Skeleton.tsx](jikmunn-odyssey-task-one/src/components/ui/Skeleton.tsx) — `Skeleton` primitive (a11y `role="status"` + `aria-label`/`aria-live`) using shimmer keyframe; composed `ItemCardSkeleton` (mirrors ItemCard layout: 4:3 image block, badge, title, two text rows, price + button row) and `ItemsGridSkeleton` (responsive 1→2→3→4 col grid, default 8 cards) — all dark-mode aware
-- ✅ [src/components/ui/index.ts](jikmunn-odyssey-task-one/src/components/ui/index.ts) — barrel export now exposes `Skeleton`, `ItemCardSkeleton`, `ItemsGridSkeleton`, `SkeletonProps`
-- ✅ [src/app/not-found.tsx](jikmunn-odyssey-task-one/src/app/not-found.tsx) — custom **404 page** styled to match shell: `Section bg="surface"` + centered card with brand-tinted `Compass` icon, “Error 404” eyebrow, headline, subcopy, dual CTAs (`Back to home` primary + `Browse products` outline), `animate-fade-in-up` entrance, dedicated `<title>` metadata
-- ✅ [src/app/items/loading.tsx](jikmunn-odyssey-task-one/src/app/items/loading.tsx) — Next.js route-level **loading skeleton** for `/items` matching the real layout: header copy skeletons + filter-bar skeleton row (search/category/sort + range row) + `ItemsGridSkeleton count={8}` (Suspense fallback when navigating into Shop)
-- ✅ [src/app/page.tsx](jikmunn-odyssey-task-one/src/app/page.tsx) — applied `animate-fade-in-up` to hero copy column and `animate-fade-in-up animation-delay-100` to the hero image column for a subtle staggered entrance (no extra deps; honors `prefers-reduced-motion`)
-- ✅ Existing focus-visible ring (`outline: 2px solid var(--brand-500)`) verified globally and on all interactive elements (Buttons, Inputs, Card links via `focus-within:` already present on `ItemCard`, Navbar links, dropdown items, mobile hamburger)
-- ✅ Hover-lift / hover-zoom polish already in `ItemCard` (`hover:-translate-y-0.5`, image `group-hover:scale-105`) and feature/testimonial cards on landing — verified consistent
-- ✅ Empty / error states already polished in earlier phases (ItemsBrowser “Reset filters”, manage-page empty state, UserItemDetailsClient “Product not found”) — re-verified intact
-- ✅ Responsive audit at 360 / 768 / 1280 — no layout breaks (grid scales 1→2→3→4 cols; Navbar sheet on mobile; manage-page table → stacked cards; hero stacks at `lg:` breakpoint)
-- ✅ `npm run lint` — clean (0 errors, 0 warnings)
-- ✅ `npx tsc --noEmit` — clean
-- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/_not-found`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`)
+- Global UI/design rules: partial
+- Home/landing structure: partial (strong base, but section and dynamic-backend requirements still pending)
+- Core listing/cards: partial (UI complete, backend data source pending)
+- Details page: partial (public + related implemented, multi-image gallery from backend pending)
+- Listing/explore page: partial (UI features implemented, backend filtering pending)
+- Authentication system (JWT + RBAC): partial (backend complete in phase 2; frontend integration pending)
+- Role-based dashboard: not started
+- Additional pages with DB-backed contact: partial
+- Backend architecture/security: partial (phase 1 complete; auth/rbac/security hardening pending)
+- Performance optimization: partial
+- Code quality/deployment/final submission: partial
 
-**Phase 6 verified present & working:**
-- ✅ [README.md](jikmunn-odyssey-task-one/README.md) — full project README replacing the create-next-app boilerplate: project description, key-features list, tech-stack table, project-structure tree, **Getting started** (prerequisites, install, `.env.local` setup, run scripts), **Firebase setup** walkthrough (enable Email/Password + Google, copy Web App config, add authorized domains, note on `localStorage` user-items store), **Route summary** table covering all 10 routes (public/SSG/protected), **Deploying to Vercel** step-by-step (env vars, Firebase authorized-domain post-deploy step), and **Quality gates** table
-- ✅ [package.json](jikmunn-odyssey-task-one/package.json) — added `"typecheck": "tsc --noEmit"` script (alongside existing `dev`/`build`/`start`/`lint`) so the documented quality gate (`npm run typecheck`) actually exists
-- ✅ [.env.example](jikmunn-odyssey-task-one/.env.example) — already in place with all six `NEXT_PUBLIC_FIREBASE_*` keys, referenced from README
-- ✅ No stray `console.log` / `debugger` / TODO leftovers in `src/` (verified via repo grep — only intentional `console.error` / `console.warn` calls inside catch blocks remain)
-- ✅ `npm run lint` — clean (0 errors, 0 warnings)
-- ✅ `npm run typecheck` (newly added) — clean
-- ✅ `npm run build` — production build passes; **17 routes prerendered** (`/`, `/_not-found`, `/about`, `/contact`, `/items`, `/items/[id]` × 6, `/items/add`, `/items/manage`, `/login`, `/register`)
-- ✅ Repo already pushed to <https://github.com/muhammad-jiku/jikmunn-odyssey-task-one> on `main` (Phases 0–5 commits 4a8876f → d33b377 → 6777106 → d65b328 → 16b1190 → 128f5e5)
+## Phase 2 status verdict
 
-**External submission steps (must be done outside the codebase — cannot be automated from here):**
-- ⏳ Create the Firebase project, enable Email/Password + Google sign-in, and paste the Web App config into `.env.local` (and into Vercel env vars). README “🔥 Firebase setup” covers this end-to-end.
-- ⏳ Import the GitHub repo on <https://vercel.com/new>, paste the same `NEXT_PUBLIC_FIREBASE_*` env vars, deploy.
-- ⏳ Add the resulting `*.vercel.app` domain to Firebase Auth → Authorized domains.
-- ⏳ Smoke-test login / register / Google OAuth / add product / manage product on the live URL, then submit GitHub link + live demo URL.
+- Phase 2 (codebase implementation): complete
+- Phase 2 (verification against exit criteria): complete
 
-**Phase progress:**
-- ✅ Phase 0 — Decide & Setup — **100% COMPLETE**
-- ✅ Phase 1 — Design System & Layout Shell — **100% COMPLETE**
-- ✅ Phase 2 — Public Pages — **100% COMPLETE**
-- ✅ Phase 3 — Firebase Authentication — **100% COMPLETE**
-- ✅ Phase 4 — Protected Routes — **100% COMPLETE**
-- ✅ Phase 5 — UI Polish & Responsiveness — **100% COMPLETE**
-- ✅ Phase 6 — Quality, Deploy, Submit — **100% COMPLETE** (codebase deliverables)
+Reason:
 
-**Remaining phases: 0** — all coding work for the assessment is finished. The only remaining items are the external Vercel deployment + Firebase project provisioning steps documented in the README, which require account access and cannot be performed inside the repo.
+- Register/login implemented with bcrypt-hashed passwords.
+- Access/refresh JWT flow implemented with refresh rotation and logout revocation.
+- Role middleware implemented and enforced on protected routes.
+- Demo admin/user accounts seeded and used by demo-login endpoint.
+- Exit criteria validated through end-to-end auth+RBAC verification script and server checks.
 
-**Decisions locked in:** Theme = e-commerce / product catalog · Stack = Next.js (App Router) + TypeScript + Tailwind v4 + ESLint · Auth = Email/Password + Google.
+## Phase 1 status verdict
 
-**Note:** `.env.local` still has empty Firebase keys — the app builds and runs without them; auth flows will surface a friendly error until keys are filled in Phase 3.
+- Phase 1 (codebase implementation): complete
+- Phase 1 (verification against exit criteria): complete
 
----
+Reason:
 
-## What the task asks (in short)
+- Server project and modular structure implemented in `server/`.
+- MongoDB connection + env validation + health route implemented.
+- Centralized error middleware + HTTP status helpers implemented.
+- Lint/format/build/dev/start scripts implemented.
+- Exit criteria validated via server lint/build and DB-connected health + production-boot checks.
 
-Build a **Next.js (App Router)** app with a chosen theme (e-commerce, events, courses, blog, etc.) that has:
+## Phase 0 status verdict
 
-- A polished, responsive **landing page** with 7 sections (Navbar, Hero, 4 themed sections, Footer)
-- An **Items listing** page with search + 2 filters (≥6 items from static/local data)
-- A **dynamic Item details** page (`/items/[id]`)
-- An **About** page
-- **Firebase Authentication** (email/password, optional Google)
-- **Protected pages**: Add Item (`/items/add`) and Manage Items (`/items/manage`)
-- Clean, consistent, mobile-first UI
-- Deliverables: GitHub repo + Vercel live demo + README
+- Phase 0 (codebase implementation): complete
+- Phase 0 (full operational checklist): complete
 
----
+Reason:
 
-## Recommended phased plan
+- Requirement lock and implementation criteria are now documented in this plan.
+- Upgrade branch created: upgrade/project-1-upgrade
+- Milestone labels created and versioned in repository: .github/labels.yml
 
-### Phase 0 — Decide & Setup (foundation)
-- Pick a theme (recommend **e-commerce / product catalog** — maps cleanly to "items", "add product", "manage products" wording in the brief).
-- Scaffold Next.js (App Router) + TypeScript + Tailwind CSS.
-- Install: `firebase`, `react-hook-form` + `zod` (forms/validation), `react-hot-toast` (toasts), `lucide-react` (icons), `clsx`.
-- Set up folder structure: `app/`, `components/`, `lib/`, `context/`, `data/`, `types/`.
-- Add `.env.local` for Firebase keys, `.gitignore`, base `globals.css`, design tokens (colors, spacing, font).
+## Remaining phase count
 
-**Exit criteria:** App runs, Tailwind works, Firebase config loads without errors.
+- If counting implementation phases only: 8 remaining (Phase 3 through Phase 10)
+- If counting full operational completion including non-code setup: 8 remaining (Phase 3 through Phase 10)
 
----
+## 1. Objective
 
-### Phase 1 — Design System & Layout Shell
-- Define color palette, typography scale, spacing, radius, shadows in Tailwind config.
-- Build reusable primitives: `Button`, `Input`, `Card`, `Badge`, `Container`, `Section`, `Spinner`.
-- Build `Navbar` (sticky, responsive, mobile hamburger) + `Footer`.
-- Wrap `app/layout.tsx` with Navbar/Footer + `AuthProvider` + `<Toaster />`.
+Upgrade the existing marketplace into a full-stack, secure, role-based, production-ready product with complete frontend and backend delivery.
 
-**Exit criteria:** Every page inherits a consistent shell on mobile/tablet/desktop.
+Primary success condition: every requirement from Odyssey Project - Project 1 Upgrade is implemented with working code, tested flows, and deployable infrastructure.
 
----
+## 2. Current State and Gap Report
 
-### Phase 2 — Public Pages (no auth needed yet)
-1. **Landing `/`** — Hero, Features, Items preview, Testimonials, CTA banner, Footer.
-2. **About `/about`** — title, description, image/section.
-3. **Items `/items`** — search bar + 2 filters (e.g., category + price range or rating), responsive grid of ≥6 cards from static data in `data/items.ts`.
-4. **Item Details `/items/[id]`** — image, title, full description, specs, price/category, related items, Back button.
+## Already strong in current codebase
 
-**Exit criteria:** All public routes look polished and responsive without auth.
+- Next.js 16 + TypeScript + Tailwind UI foundation
+- Responsive public pages and reusable UI components
+- Product listing/search/filter/sort/pagination UI
+- Product details and related items UI
+- Login/register UX and protected routes (frontend guard)
+- Cart flow and theme support
+- Vercel deployment already live
 
----
+## Missing or not compliant with new Upgrade brief
 
-### Phase 3 — Firebase Authentication
-- Create Firebase project, enable Email/Password (and Google).
-- `lib/firebase.ts` (init), `context/AuthContext.tsx` (`user`, `loading`, `login`, `register`, `logout`, `googleLogin`).
-- Build `/login` and `/register` pages with `react-hook-form` + zod validation, loading states, error toasts.
-- Update Navbar: when logged in → user dropdown (avatar/name, **Add Product**, **Manage Products**, **Logout**) replacing login/register buttons.
-- Redirect to `/` after successful login.
+- Frontend is not yet wired to backend JWT auth flow (still Firebase client auth)
+- Product data still static/localStorage instead of backend source of truth
+- Contact form currently mailto instead of database persistence
+- No Edit Item flow with server-side validation
+- No profile update API with image upload and password change
+- No role-based dashboard with sidebars, cards, charts, advanced tables
+- No admin user management endpoints and UI
+- No backend deployment and production API wiring
+- No demo credential section finalized for submission
 
-**Exit criteria:** Can register, login, logout; navbar reflects auth state; refresh persists session.
+Conclusion: current app is a great frontend baseline, but full compliance now requires a backend-first rebuild of data and auth flows while preserving existing UI polish.
 
----
+## 3. Target Architecture (Permanent and Scalable)
 
-### Phase 4 — Protected Routes
-- Create `components/ProtectedRoute.tsx` (or middleware) that redirects unauthenticated users to `/login`.
-- **`/items/add`** — form (title, short desc, full desc, price, category, optional image URL); submit → save to localStorage (or Firestore if you want to extend); success toast.
-- **`/items/manage`** — table/grid of items with **View** (link to details) and **Delete** (with confirm) actions; empty state UI.
-- Use a small `lib/itemsStore.ts` to merge static items + user-added items from localStorage so they appear on `/items` too.
+## Monorepo structure
 
-**Exit criteria:** Logged-out users get redirected; logged-in users can add/view/delete items end-to-end.
+- client/: existing Next.js app
+- server/: Express API
 
----
+## Server structure
 
-### Phase 5 — UI Polish & Responsiveness Pass
-- Audit every page at 360px / 768px / 1280px.
-- Add hover/focus states everywhere; ensure focus-visible rings (a11y).
-- Add subtle micro-animations (fade-in, hover-lift) — optional `framer-motion`.
-- Loading skeletons for items grid; empty/error states; 404 page.
-- Verify color contrast and consistent typography hierarchy.
+- server/index.js
+- server/src/config/
+- server/src/middleware/
+- server/src/models/
+- server/src/controllers/
+- server/src/routes/
+- server/src/services/
+- server/src/utils/
+- server/src/validators/
 
-**Exit criteria:** No layout breaks; consistent spacing; everything feels intentional.
+## Tech decisions
 
----
+- Backend: Express + Mongoose
+- Auth: JWT access token + refresh token, role claims
+- Password security: bcrypt
+- Validation: zod or joi on request payloads
+- File upload: Cloudinary (recommended) or S3 for profile/item images
+- Charts data: aggregated backend endpoints consumed by dashboard
+- Frontend data layer: API client modules + React Query or SWR
 
-### Phase 6 — Quality, Deploy, Submit
-- Lint/typecheck clean; remove `console.log`s.
-- Write **README.md**: description, key features, setup steps (`.env.example`), Firebase setup notes, route summary table.
-- Push to GitHub.
-- Deploy to **Vercel**, add Firebase env vars in Vercel dashboard, add deployed domain to Firebase Auth authorized domains.
-- Smoke-test the live URL (auth + protected routes).
-- Submit GitHub link + live demo link.
+## 4. Data Models (Minimum)
 
-**Exit criteria:** Live demo works, README complete, repo public.
+- User
+  - name, email (unique), passwordHash, role (user/admin), avatarUrl
+  - createdAt, updatedAt, lastLoginAt
+- Item
+  - title, shortDescription, fullDescription, price, category, rating
+  - images[] (min 2 for details gallery), ownerId, status, timestamps
+- ContactMessage
+  - name, email, subject, message, status, createdAt
+- RefreshToken (if persisted)
+  - userId, tokenHash, expiresAt, revokedAt
 
----
+Optional but recommended:
 
-## Suggested route summary
+- Review
+- ActivityLog
 
-| Route | Type | Purpose |
-|---|---|---|
-| `/` | Public | Landing (7 sections) |
-| `/about` | Public | About the app |
-| `/items` | Public | Search + filter + grid |
-| `/items/[id]` | Public | Item details |
-| `/login`, `/register` | Public | Firebase auth |
-| `/items/add` | Protected | Add new item |
-| `/items/manage` | Protected | Manage user's items |
+## 5. API Surface (Minimum Required)
+
+## Auth routes
+
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/demo-login
+- POST /api/auth/refresh
+- POST /api/auth/logout
+- GET /api/auth/me
+
+## User routes
+
+- GET /api/users/me
+- PATCH /api/users/me
+- PATCH /api/users/me/password
+- POST /api/users/me/avatar
+
+## Item routes
+
+- GET /api/items (search/filter/sort/pagination from query params)
+- GET /api/items/:id
+- POST /api/items (auth)
+- PATCH /api/items/:id (owner/admin)
+- DELETE /api/items/:id (owner/admin)
+
+## Contact routes
+
+- POST /api/contact
+- GET /api/contact (admin)
+
+## Admin routes
+
+- GET /api/admin/overview
+- GET /api/admin/users
+- PATCH /api/admin/users/:id/role
+- GET /api/admin/items
+- DELETE /api/admin/items/:id
+- GET /api/admin/reports/charts
+
+## 6. Security and Validation Rules
+
+- Hash passwords with bcrypt before save
+- Never return passwordHash in API responses
+- Access token short TTL (for example 15m), refresh token longer TTL (for example 7d)
+- Implement token expiry handling on client (silent refresh then forced logout)
+- Role middleware: requireRole(["admin"]) and requireAuth()
+- Server-side validation for every mutating endpoint
+- CORS locked to frontend origins only
+- Rate limit auth routes
+- Centralized error handler with safe production messages
+
+## 7. UI and UX Compliance Checklist
+
+Implement or verify all required reusable components:
+
+- Button
+- Input
+- Card
+- Badge
+- Modal
+- Table
+- Dropdown
+
+Forms that must exist and pass full standard (client + server validation, loading, success, error, labels, accessibility):
+
+- Login
+- Registration
+- Contact (saved to DB)
+- Create item
+- Edit item
+- Profile update
+
+Landing page compliance:
+
+- Sticky full-width navbar
+- Minimum 4 logged-out links and 6 logged-in links
+- Advanced dropdown (profile menu is acceptable)
+- Hero at 60-70vh with clear hierarchy and interactive element
+- At least 8 meaningful sections with real purpose/data
+- Footer with working links, contact and social links
+
+## 8. Implementation Phases (Execution Roadmap)
+
+## Phase 0 - Requirement Lock and Branching
+
+Tasks:
+
+- [x] Freeze requirement checklist from upgrade brief
+- [x] Create upgrade branch and milestone labels
+- [x] Define done criteria per section (UI, auth, dashboard, backend)
+
+Exit criteria:
+
+- [x] Signed checklist committed in this PLAN
+- [x] Branch and milestone labels prepared
+
+Current completion:
+
+- Codebase completion: 100%
+- Full operational completion: 100% (3 of 3 core tasks done)
+
+## Phase 1 - Backend Bootstrap (Express + Mongoose)
+
+Tasks:
+
+- [x] Create server project and modular structure
+- [x] Add MongoDB url connection, env validation, health route
+- [x] Add centralized error middleware, status code helpers
+- [x] Add lint/format scripts and production startup scripts
+
+Exit criteria:
+
+- [x] Server boots locally and in production mode
+- [x] Health endpoint returns OK with DB connectivity
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (4 of 4 core tasks done, 2 of 2 exit criteria passed)
+
+## Phase 2 - Auth and RBAC Foundation
+
+Tasks:
+
+- [x] Implement register/login with bcrypt + JWT access/refresh
+- [x] Implement token refresh and logout revoke flow
+- [x] Add role middleware (user/admin)
+- [x] Seed one admin and one user demo account
+- [x] Add demo-login endpoint
+
+Exit criteria:
+
+- [x] Login/register/demo-login works end-to-end
+- [x] Role-protected endpoints reject unauthorized requests correctly
+
+Current completion:
+
+- Codebase completion: 100%
+- Verified completion: 100% (5 of 5 core tasks done, 2 of 2 exit criteria passed)
+
+## Phase 3 - Product API and Backend Query Features
+
+Tasks:
+
+- Build Item schema and CRUD endpoints
+- Add backend search, filters, sorting, pagination
+- Add ownership checks for edit/delete
+- Add image array support (minimum 2 images per item)
+
+Exit criteria:
+
+- /api/items fully powers listing and details pages
+- No hardcoded listing data used in production path
+
+## Phase 4 - Contact, Profile, and Uploads
+
+Tasks:
+
+- Persist contact form to DB with validation
+- Build profile read/update/password-change APIs
+- Implement avatar upload pipeline (Cloudinary/S3)
+- Add frontend pages/forms for profile update
+
+Exit criteria:
+
+- Contact submissions are stored and reviewable
+- Profile update and password update both pass validation and persist
+
+## Phase 5 - Frontend Data Migration to API
+
+Tasks:
+
+- Replace localStorage item source with API client
+- Keep optimistic UX where needed but source of truth is backend
+- Wire auth state to JWT lifecycle and refresh handling
+- Preserve existing polished UI while switching data source
+
+Exit criteria:
+
+- Explore/listing/details/create/edit/manage all backend-driven
+- No localhost URLs hardcoded in production build
+
+## Phase 6 - Role-Based Dashboards (User and Admin)
+
+Tasks:
+
+- Build dashboard shell with role-specific sidebars
+- User sidebar with at least 4 menu items
+- Admin sidebar with at least 6 menu items
+- Overview cards using dynamic backend data
+- Add bar, line, and pie charts from real API aggregates
+- Build table screens with pagination/filtering/sorting/actions
+
+Exit criteria:
+
+- User and admin dashboards are different, functional, and data-driven
+- Charts and tables are backed by real database data
+
+## Phase 7 - Landing and Section Expansion
+
+Tasks:
+
+- Expand landing to minimum 8 meaningful sections
+- Ensure real business content only (no placeholders/lorem)
+- Add dynamic statistics section powered by backend
+- Verify navbar/footer links are fully functional
+
+Exit criteria:
+
+- Home page meets all section and content authenticity requirements
+
+## Phase 8 - UI Consistency, Accessibility, Responsiveness
+
+Tasks:
+
+- Enforce 3 primary colors max plus neutral palette
+- Verify contrast in dark mode
+- Standardize spacing (4px or 8px scale)
+- Standardize border radius and typography scale
+- Test mobile/tablet/desktop for overflow/alignment issues
+
+Exit criteria:
+
+- Zero horizontal overflow and no layout breakpoints failing
+- Reusable components visually consistent across pages
+
+## Phase 9 - Performance and Quality Hardening
+
+Tasks:
+
+- Add image optimization and lazy loading where applicable
+- Apply code splitting and route-level loading states
+- Remove unnecessary re-renders (memoization/selectors)
+- Remove development logs from production code
+- Add smoke tests for critical flows
+
+Exit criteria:
+
+- Lighthouse/performance and runtime behavior are stable
+- lint, typecheck, build pass for client and server
+
+## Phase 10 - Deployment and Submission
+
+Tasks:
+
+- Deploy frontend to Vercel
+- Deploy backend to Render/Railway/VPS
+- Configure production environment variables
+- Point frontend to production API base URL
+- Validate end-to-end in production
+- Finalize README with architecture, setup, APIs, demo credentials
+
+Exit criteria:
+
+- Frontend and backend live links both working
+- Final submission bundle complete and verified
+
+## 9. Definition of Done (100 Percent Compliance)
+
+The upgrade is done only when all checks below are true:
+
+- Every requirement in sections 1 to 13 is mapped to working code
+- Product listing and details consume backend data only
+- JWT + RBAC + bcrypt + token expiry handling are verified
+- Contact form writes to DB and can be viewed by admin
+- Edit item and profile update are implemented end-to-end
+- User and admin dashboards are fully role-separated
+- Charts and tables use dynamic backend data
+- Frontend and backend are both deployed and production-ready
+- README includes live URLs, repository, setup, and demo credentials
+
+## 10. Permanent Maintenance Rules
+
+- Any schema change must update model, validator, controller, API docs, and frontend types in same PR
+- Any endpoint change must update API client, pages, and tests in same PR
+- Keep shared constants for roles, status codes, and validation limits
+- Add migration scripts for breaking data changes
+- Protect main branch with required checks (lint, typecheck, build, tests)
+- Use semantic commit messages and release tags
+
+## 11. Suggested Work Order for Fastest Success
+
+1. Phase 1 and 2 first (backend and auth foundation)
+2. Phase 3 and 5 next (item API then frontend migration)
+3. Phase 4 (contact/profile) and Phase 6 (dashboards)
+4. Phase 7 and 8 polish and compliance pass
+5. Phase 9 and 10 hardening, deploy, and submission
+
+This order minimizes rework and ensures the app becomes truly permanent and scalable instead of patch-based.

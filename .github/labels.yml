@@ -1,0 +1,95 @@
+- name: milestone:phase-0
+  color: "1D76DB"
+  description: "Requirement lock, planning, branch setup"
+
+- name: milestone:phase-1
+  color: "0052CC"
+  description: "Backend bootstrap"
+
+- name: milestone:phase-2
+  color: "006B75"
+  description: "Auth and RBAC foundation"
+
+- name: milestone:phase-3
+  color: "0E8A16"
+  description: "Product API and query features"
+
+- name: milestone:phase-4
+  color: "2EA44F"
+  description: "Contact, profile, uploads"
+
+- name: milestone:phase-5
+  color: "A2EEEF"
+  description: "Frontend migration to backend APIs"
+
+- name: milestone:phase-6
+  color: "FBCA04"
+  description: "Role-based dashboards"
+
+- name: milestone:phase-7
+  color: "D4C5F9"
+  description: "Landing expansion and real data sections"
+
+- name: milestone:phase-8
+  color: "C2E0C6"
+  description: "UI consistency, accessibility, responsiveness"
+
+- name: milestone:phase-9
+  color: "F9D0C4"
+  description: "Performance and quality hardening"
+
+- name: milestone:phase-10
+  color: "BFDADC"
+  description: "Deployment and submission"
+
+- name: area:backend
+  color: "5319E7"
+  description: "Server-side implementation"
+
+- name: area:frontend
+  color: "C5DEF5"
+  description: "Client-side implementation"
+
+- name: area:auth
+  color: "B60205"
+  description: "Authentication and authorization"
+
+- name: area:dashboard
+  color: "FEF2C0"
+  description: "User/admin dashboard features"
+
+- name: area:security
+  color: "D93F0B"
+  description: "Security controls and validation"
+
+- name: area:deployment
+  color: "0366D6"
+  description: "Production deployment and environment"
+
+- name: type:feature
+  color: "0E8A16"
+  description: "New feature work"
+
+- name: type:bug
+  color: "D73A4A"
+  description: "Bug fix work"
+
+- name: type:task
+  color: "EDEDED"
+  description: "Planned implementation task"
+
+- name: priority:p0
+  color: "B60205"
+  description: "Critical priority"
+
+- name: priority:p1
+  color: "D93F0B"
+  description: "High priority"
+
+- name: priority:p2
+  color: "FBCA04"
+  description: "Medium priority"
+
+- name: priority:p3
+  color: "0E8A16"
+  description: "Low priority"
